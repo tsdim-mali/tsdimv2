@@ -506,6 +506,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 </style>
   <!-- Google Fonts pour un look moderne -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a4d94">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -735,6 +736,10 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 // Collez ici l'adresse de votre Apps Script (elle finit par /exec).
 // Laissez "" pour utiliser la liste ci-dessous (METHODE 2).
 const URL_COMPTES = "";
+
+// PAIEMENT EN LIGNE AUTOMATIQUE (PayDunya) : collez ici l'adresse /exec de Paiement.gs
+// Laissez "" pour desactiver (les boutons de paiement en ligne sont alors caches).
+const URL_PAIEMENT = "";
 
 // METHODE 2 : liste d'acces deja prets, classes par duree.
 // "u" = identifiant | "h" = mot de passe chiffre (illisible ici)
@@ -1910,7 +1915,7 @@ setInterval(function(){
   try{
     if(typeof URL_COMPTES!=='undefined'&&modeCompte()){
       var s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
-      if(!s||!s.u||!s.p){var Le=limiteEssai(false);if(Le&&DATE_LIMITE)DATE_LIMITE=Le;return}if(!DATE_LIMITE)return;
+      if(!s||!s.u||!s.p){var Lp2=window.limitePaiement&&window.limitePaiement();var Le=Lp2||limiteEssai(false);if(Le&&DATE_LIMITE)DATE_LIMITE=Le;return}if(!DATE_LIMITE)return;
       verifierConnexion(s.u,s.p,true).then(function(r){
         if(r.ok){DATE_LIMITE=limiteDe(r);ROLE=r.role||'client';majAdmin()}
         else if(!r.hors)DATE_LIMITE=new Date(0);
@@ -2211,7 +2216,53 @@ var premier=document.querySelector('.btn-nav'),nav=premier&&premier.parentNode;
 function bouton(txt,fn,id){if(!nav)return;var b=document.createElement('button');b.className='btn-nav';b.textContent=txt;if(id)b.id=id;b.onclick=fn;nav.appendChild(b)}
 bouton('📚 Factures',window.ouvrirFactures);
 bouton("📖 Mode d'emploi",function(){window.ouvrirTexteLegal('aide')});
+/* Couleurs personnalisées : en-tête et arrière-plan */
+(function(){
+var D={tete:'#0a4d94',fond:'#eef3f9'};
+function mix(h,t,a){var n=parseInt(h.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,tr=t,c=function(x){return Math.round(x+(tr-x)*a)};return'#'+[c(r),c(g),c(b)].map(function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
+var stc=document.createElement('style');stc.id='stCouleurs';document.head.appendChild(stc);
+function appliquer(){
+  var c=lire('tsdim_couleurs',null);
+  if(!c){stc.textContent='';return}
+  var t=c.tete||D.tete,f=c.fond||D.fond;
+  stc.textContent='.header-app{background:linear-gradient(135deg,'+mix(t,0,.35)+','+t+' 55%,'+mix(t,255,.2)+') !important}'
+   +'body{background:'+f+' !important}';
+}
+appliquer();
+window.ouvrirCouleurs=function(){
+  var c=lire('tsdim_couleurs',{})||{};
+  var ov=document.createElement('div');ov.className='fm-overlay';
+  ov.innerHTML='<div class="fm-box"><h2>🎨 Mes couleurs</h2>'
+   +'<label style="display:block;margin:12px 0 4px;font-weight:600">En-tête (bandeau du haut)</label>'
+   +'<input type="color" id="cpTete" style="width:100%;height:48px;border:0;padding:0" value="'+(c.tete||D.tete)+'">'
+   +'<label style="display:block;margin:12px 0 4px;font-weight:600">Arrière-plan</label>'
+   +'<input type="color" id="cpFond" style="width:100%;height:48px;border:0;padding:0" value="'+(c.fond||D.fond)+'">'
+   +'<div class="fm-actions"><button class="btn-action warning" id="cpRaz">Par défaut</button><button class="btn-action primary" id="cpOk">Fermer</button></div></div>';
+  document.body.appendChild(ov);
+  function maj(){ecrire('tsdim_couleurs',{tete:ov.querySelector('#cpTete').value,fond:ov.querySelector('#cpFond').value});appliquer()}
+  ov.querySelector('#cpTete').oninput=maj;ov.querySelector('#cpFond').oninput=maj;
+  ov.querySelector('#cpRaz').onclick=function(){try{store.removeItem('tsdim_couleurs')}catch(e){}appliquer();ov.remove()};
+  ov.querySelector('#cpOk').onclick=function(){ov.remove()};
+};
+})();
+bouton('🎨 Couleurs',window.ouvrirCouleurs);
 bouton('🌙 Sombre',function(){var on=document.documentElement.classList.toggle('dark');ecrire('tsdim_sombre',on)},'btnSombre');
+/* Bouton Personnaliser : regroupe les autres boutons */
+(function(){
+if(!nav)return;
+var garde=['btnAdmin','btnQuit'];
+var pan=document.createElement('div');pan.id='panPerso';
+pan.style.cssText='display:none;flex:0 0 100%;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px;padding:10px;border-radius:18px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3)';
+var bp=document.createElement('button');bp.className='btn-nav';bp.id='btnPerso';bp.textContent='⚙️ Personnaliser';
+var rester=['🏢 Entreprise','💾 Enregistrer'];
+Array.prototype.slice.call(nav.querySelectorAll('.btn-nav')).forEach(function(b){
+  if(b===bp||b.id==='btnAdmin'||b.id==='btnQuit')return;
+  if(rester.indexOf(b.textContent.trim())>=0)return;
+  pan.appendChild(b);
+});
+bp.onclick=function(){var o=pan.style.display==='none';pan.style.display=o?'flex':'none';bp.textContent=o?'⚙️ Personnaliser ▲':'⚙️ Personnaliser'};
+nav.appendChild(bp);nav.appendChild(pan);
+})();
 var pied=document.createElement('div');
 pied.style.cssText='text-align:center;font-size:.8rem;padding:18px 10px calc(70px + env(safe-area-inset-bottom,0px));color:#64748b';
 pied.innerHTML='<a href="#" id="lCgu">Conditions d\'utilisation</a> · <a href="#" id="lConf">Confidentialité</a> · <a href="https://wa.me/'+WA+'" target="_blank" rel="noopener">💬 Support</a>';
@@ -2275,6 +2326,56 @@ window.afficherPaiement=function(op){
   $('pyCopy').onclick=function(){copierTexte(m.num.replace(/\s/g,''))};
 };
 var bm=document.querySelector('#modalReabonnement button[onclick*="moov"]');if(bm)bm.textContent='🔵 Payer via Moov Africa (Malitel)';
+
+/* ---------- 7b. Paiement en ligne automatique (Orange Money / carte) ---------- */
+function payOn(){return typeof URL_PAIEMENT==='string'&&URL_PAIEMENT!==''}
+function srv(p){return fetch(URL_PAIEMENT+'?'+Object.keys(p).map(function(k){return k+'='+encodeURIComponent(p[k])}).join('&')).then(function(r){return r.json()})}
+function nbJours(ms){return Math.max(1,Math.round((ms-Date.now())/86400000))}
+window.limitePaiement=function(){var v=lireSigne('tsdim_paye');if(!v||v==='ALTERE')return null;var t=parseInt(v,10);return t>maintenant()?new Date(t):null};
+window.payerEnLigne=function(){
+  if(!payOn())return;
+  alert('⏳ Ouverture du paiement sécurisé...');
+  srv({action:'creer',device:idAppareil(),offre:'m1'}).then(function(d){
+    if(d&&d.ok&&d.url){location.href=d.url}else alert('❌ '+((d&&d.msg)||'Paiement indisponible'));
+  }).catch(function(){alert('❌ Connexion impossible. Vérifiez votre internet.')});
+};
+window.verifierPaiement=function(){
+  if(!payOn())return;
+  srv({action:'licence',device:idAppareil()}).then(function(d){
+    if(d&&d.ok){ecrireSigne('tsdim_paye',d.exp);document.querySelectorAll('.fm-overlay').forEach(function(o){o.remove()});alert('✅ Paiement trouvé : accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
+    else alert("Aucun paiement trouvé pour cet appareil. Si vous venez de payer, attendez 1 minute et réessayez.");
+  }).catch(function(){alert('❌ Connexion impossible.')});
+};
+var ca0=connexionAuto;
+connexionAuto=function(cb){var Lp=window.limitePaiement();if(Lp){DATE_LIMITE=Lp;ROLE='client';majAdmin();return cb(true)}return ca0(cb)};
+/* retour de la page de paiement : ?token=... */
+var tkRetour=null;try{tkRetour=new URLSearchParams(location.search).get('token')}catch(e){}
+if(tkRetour&&payOn()){
+  setTimeout(function(){
+    srv({action:'statut',token:tkRetour,device:idAppareil()}).then(function(d){
+      try{history.replaceState(null,'',location.pathname)}catch(e){}
+      if(d&&d.ok){ecrireSigne('tsdim_paye',d.exp);alert('✅ Paiement confirmé ! Accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
+      else alert("⏳ Paiement pas encore confirmé ("+((d&&d.status)||'en attente')+"). Appuyez sur « J'ai déjà payé » dans une minute.");
+    }).catch(function(){alert("❌ Connexion impossible. Appuyez plus tard sur « J'ai déjà payé ».")});
+  },600);
+}
+/* boutons dans la fenêtre de connexion et dans l'écran de renouvellement */
+if(payOn()){
+  new MutationObserver(function(){
+    var t=$('fmTrial');if(!t||$('fmPayOn'))return;
+    var b1=document.createElement('button');b1.id='fmPayOn';b1.className='btn-action primary';
+    b1.style.cssText='width:100%;margin-top:12px;background:linear-gradient(135deg,#f58220,#ff9f43)';b1.textContent='⚡ Payer en ligne (Orange Money / carte)';b1.onclick=window.payerEnLigne;
+    var b2=document.createElement('button');b2.id='fmChk';b2.className='btn-action warning';
+    b2.style.cssText='width:100%;margin-top:8px';b2.textContent="🔄 J'ai déjà payé : vérifier";b2.onclick=window.verifierPaiement;
+    t.parentNode.insertBefore(b1,t);t.parentNode.insertBefore(b2,t);
+  }).observe(document.body,{childList:true});
+  var mr=$('modalReabonnement');
+  if(mr&&mr.firstElementChild){
+    var bx=mr.firstElementChild,bp=bx.querySelector('p'),b3=document.createElement('button');
+    b3.className='btn-action primary';b3.style.cssText='width:100%;margin:10px 0;background:linear-gradient(135deg,#f58220,#ff9f43)';b3.textContent='⚡ Payer en ligne (Orange Money / carte)';b3.onclick=window.payerEnLigne;
+    bx.insertBefore(b3,bp?bp.nextSibling:bx.firstChild);
+  }
+}
 
 /* ---------- 8. Fonctionnement hors ligne ---------- */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
