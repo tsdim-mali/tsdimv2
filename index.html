@@ -3,7 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>TSDim – Dimensionnement Solaire</title>
+  <title>TSDim – Dimensionnement Solaire au Mali</title>
+  <meta name="description" content="TSDim : calculez gratuitement votre installation solaire au Mali : panneaux, batteries, onduleur et régulateur selon vos appareils. Devis et factures en FCFA.">
+  <meta name="keywords" content="dimensionnement solaire, calcul panneaux solaires, batteries, onduleur, Mali, TSDim, installation solaire">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tsdim-mali.github.io/tsdimv2/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TSDim">
+  <meta property="og:title" content="TSDim – Dimensionnement Solaire">
+  <meta property="og:description" content="TSDim : calculez gratuitement votre installation solaire au Mali : panneaux, batteries, onduleur et régulateur selon vos appareils. Devis et factures en FCFA.">
+  <meta property="og:url" content="https://tsdim-mali.github.io/tsdimv2/">
+  <meta property="og:image" content="https://tsdim-mali.github.io/tsdimv2/icon-512.png">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"TSDim","alternateName":["TSDim Mali","TSDim Dimensionnement Solaire"],"url":"https://tsdim-mali.github.io/tsdimv2/","inLanguage":"fr"}</script>
   <style>
 :root {
   --primary: #0a4d94;        /* Bleu roi inspiré de l'icône TSDim */
@@ -2246,7 +2259,167 @@ window.ouvrirCouleurs=function(){
 };
 })();
 bouton('🎨 Couleurs',window.ouvrirCouleurs);
-bouton('🌙 Sombre',function(){var on=document.documentElement.classList.toggle('dark');ecrire('tsdim_sombre',on)},'btnSombre');
+/* Formation : quiz basé sur le cours (PDF) */
+(function(){
+var CH=[
+{t:"⚡ Bases de l'électricité PV",q:[
+["Quelle est la formule de la puissance ?",["P = U × I","P = U / I","P = I / U","P = U + I"],"La puissance (W) est le produit de la tension (V) par le courant (A)."],
+["Quelle est la formule de l'énergie ?",["E = P × t","E = P / t","E = U + I","E = P − t"],"L'énergie (Wh ou kWh) = puissance × temps."],
+["Quel courant produisent les panneaux photovoltaïques ?",["Du courant continu (DC)","Du courant alternatif (AC)","Du triphasé uniquement","Aucun courant"],"Les panneaux produisent du courant continu. L'onduleur le convertit en alternatif."],
+["À quoi sert un onduleur ?",["Convertir le courant continu en alternatif","Stocker l'énergie","Contrôler la charge de la batterie","Orienter les panneaux"],"Il rend le système compatible avec les appareils domestiques (220/230 V)."],
+["Dans quelle unité s'exprime la puissance d'un panneau ?",["Wc (watt-crête)","Ah","kWh/m²","Ohm"],"Exemples du cours : 450 Wc, 550 Wc, 585 Wc."]
+]},
+{t:"🔋 Cellules et panneaux",q:[
+["Quel matériau compose principalement la cellule photovoltaïque ?",["Le silicium","Le cuivre","Le plomb","Le fer"],"C'est un semi-conducteur, principalement le silicium."],
+["Quelle est la tension d'une cellule en silicium ?",["Environ 0,5 à 0,6 V","Environ 12 V","Environ 24 V","Environ 5 V"],"Une cellule produit peu d'électricité : on en assemble plusieurs pour former un module."],
+["Quelle cellule a le meilleur rendement (16 à 21 %) ?",["Monocristalline","Polycristalline","Amorphe (couches minces)","Aucune"],"Monocristalline : 16 à 21 %. Polycristalline : 14 à 18 %. Couches minces : 6 à 7 %."],
+["Quel est le rendement des cellules polycristallines ?",["14 à 18 %","6 à 7 %","16 à 21 %","40 à 50 %"],"Polycristalline : 14 à 18 %."],
+["Quel est le rendement des couches minces (amorphe) ?",["6 à 7 %","14 à 18 %","16 à 21 %","30 %"],"Couches minces : 6 à 7 %."],
+["Lequel n'est PAS un élément d'un panneau solaire ?",["Un onduleur intégré","Une protection en verre","Un cadre","Une boîte de jonction"],"Un panneau comprend : cellules, verre, cadre, boîte de jonction, câbles et connecteurs."]
+]},
+{t:"☀️ Gisement solaire au Mali",q:[
+["Quelle est l'irradiation globale moyenne au Mali ?",["5 à 7 kWh/m²/jour","1 à 2 kWh/m²/jour","10 à 12 kWh/m²/jour","20 kWh/m²/jour"],"Elle augmente progressivement du Sud vers le Nord."],
+["Où l'irradiation est-elle généralement la plus élevée ?",["Au Nord (climat désertique)","Au Sud","Partout pareil","Seulement à Bamako"],"Peu de nuages au Nord. Le Sud est plus nuageux et plus pluvieux."],
+["Quelle est l'irradiation moyenne à Bamako ?",["≈ 5,6 kWh/m²/jour (≈ 2 060 kWh/m²/an)","≈ 2 kWh/m²/jour","≈ 9 kWh/m²/jour","≈ 12 kWh/m²/jour"],"Exemple du cours : Bamako, environ 5,6 kWh/m²/jour."],
+["Comment orienter les panneaux au Mali ?",["Vers le Sud","Vers le Nord","Vers l'Ouest","Peu importe"],"Dans l'hémisphère Nord, l'orientation Sud maximise la production."],
+["Quelle inclinaison est conseillée ?",["12° à 15°","45° à 60°","0° (à plat)","90°"],"Cet angle optimise la production toute l'année."],
+["Pour une petite installation, quelle irradiation prendre ?",["Celle du mois le moins ensoleillé","La moyenne annuelle","Celle du mois le plus ensoleillé","On n'en tient pas compte"],"Cela garantit la couverture des besoins en toute saison. La moyenne annuelle sert pour les grandes installations."]
+]},
+{t:"🔌 Association des panneaux et batteries",q:[
+["Que se passe-t-il en montage SÉRIE ?",["Les tensions s'additionnent, le courant reste constant","Les courants s'additionnent, la tension reste constante","Rien ne change","La puissance double"],"Série : on augmente la tension."],
+["Que se passe-t-il en montage PARALLÈLE ?",["Les courants s'additionnent, la tension reste constante","Les tensions s'additionnent, le courant reste constant","Rien ne change","La tension double"],"Parallèle : on augmente le courant."],
+["3 panneaux de 250 Wc, 35,8 V, 7 A montés en série : quelle tension ?",["107,4 V","35,8 V","11,9 V","21 V"],"35,8 V × 3 = 107,4 V. Le courant reste 7 A."],
+["Les mêmes 3 panneaux montés en parallèle : quel courant ?",["21 A","7 A","2,3 A","107 A"],"7 A × 3 = 21 A. La tension reste 35,8 V."],
+["Quelle association est à éviter ?",["Panneaux neufs et usagés, puissances ou technologies différentes","Panneaux identiques en série","Deux strings identiques en parallèle","Panneaux de même modèle"],"Ces associations sont proscrites dans les installations PV."],
+["Pour augmenter la CAPACITÉ (Ah) de batteries, on les monte :",["En parallèle","En série","En diagonale","Ce n'est pas possible"],"Parallèle : + avec +, − avec −. Cela augmente la capacité en Ah."],
+["Pour augmenter la TENSION de batteries, on les monte :",["En série","En parallèle","Une seule suffit","On ne peut pas"],"Série : le + de la première est relié au − de la deuxième."]
+]},
+{t:"🧩 Régulateur, batteries, onduleur",q:[
+["Quel est le rôle du régulateur de charge ?",["Contrôler la charge de la batterie et limiter sa décharge","Convertir DC en AC","Stocker l'énergie","Orienter les panneaux"],"Il évite la surcharge et la décharge profonde, ce qui protège la batterie."],
+["Quel régulateur convient aux petites installations (< 150 W), moins coûteux ?",["PWM","MPPT","Onduleur hybride","Aucun"],"Le PWM est idéal pour les petits systèmes. La tension du panneau doit être la même que celle de la batterie."],
+["Quel régulateur suit le point de puissance maximale et accepte une tension d'entrée plus élevée ?",["MPPT","PWM","Fusible","Disjoncteur"],"Le MPPT est plus perfectionné, adapté aux grands systèmes, et plus coûteux."],
+["Quelles sont les 3 étapes de charge d'un régulateur PWM ?",["Bulk, absorption, float","Start, stop, reset","Charge, décharge, veille","Série, parallèle, mixte"],"Bulk (courant maximal), absorption (tension maintenue), float (maintien sans surcharge)."],
+["Tension d'arrêt de charge par élément de batterie (à 25 °C) ?",["≈ 2,45 V","≈ 1,95 V","≈ 12 V","≈ 0,6 V"],"Elle protège la batterie contre la surcharge."],
+["Tension d'arrêt de décharge par élément ?",["≈ 1,95 V","≈ 2,45 V","≈ 5 V","≈ 0 V"],"Elle protège contre la décharge profonde et allonge la durée de vie."],
+["Quel coefficient de sécurité applique-t-on au courant Imod du régulateur ?",["1,25","0,5","2","10"],"Imod = 1,25 × Icc × nombre de strings."],
+["Icc = 7,95 A, 2 strings, coefficient 1,25. Quel est Imod ?",["≈ 19,9 A","≈ 8 A","≈ 12 A","≈ 40 A"],"1,25 × 7,95 × 2 = 19,875 A. Un PWM 24V/20A ou 24V/30A convient."],
+["Quelle profondeur de décharge prend-on en pratique pour les batteries ?",["75 %","20 %","100 %","10 %"],"Elle varie de 70 à 80 % ; en pratique on prend 75 %. Le rendement de la batterie est pris à 80 %."],
+["Pour un onduleur de 3 000 W, jusqu'à quelle puissance de panneaux peut-on aller (+20 %) ?",["3 600 W","3 000 W","6 000 W","1 500 W"],"On peut surcharger l'onduleur jusqu'à 20 %."],
+["Quelle puissance minimale de panneaux pour un onduleur de 3 000 W ?",["2 700 W","1 000 W","500 W","0 W"],"Il est déconseillé de sous-charger un onduleur de plus de 10 %."],
+["Où installer l'onduleur ?",["Local propre, sec, aéré, séparé des batteries (pas au-dessus)","Directement au-dessus des batteries","Dehors sous la pluie","Dans un local fermé et humide"],"Il doit être propre, sec et aéré, et séparé du parc de batteries."]
+]},
+{t:"📐 Dimensionnement et maintenance",q:[
+["Quelle est la première étape de conception d'un système PV ?",["Étape 0 : la visite de site","Choisir l'onduleur","Faire le câblage","La maintenance"],"Le technicien définit avec le client les charges, la durée d'utilisation et l'emplacement."],
+["Quel coefficient de correction applique-t-on à la consommation en courant alternatif ?",["0,90","0,50","1,5","2"],"Consommation totale = CC + CA / 0,90."],
+["Ej = 1 635,32 Wh/j, 4 kWh/m²/j, rendement 0,65 : quelle puissance crête ?",["≈ 629 Wc","≈ 100 Wc","≈ 2 000 Wc","≈ 6 000 Wc"],"P = 1 635,32 × 1 / (4 × 0,65) ≈ 628,97 Wc."],
+["Avec 629 Wc à produire et des modules de 150 Wc, combien de modules ?",["4 modules","1 module","10 modules","20 modules"],"629 / 150 = 4,19, soit 4 modules de 150 Wc/12 V (2 strings de 2)."],
+["5 panneaux de 280 Wc, Ne = 6,72 h/j : quelle production journalière ?",["9 408 Wh/j","1 400 Wh/j","5 000 Wh/j","280 Wh/j"],"5 × 280 × 6,72 = 9 408 Wh/j."],
+["Comment calcule-t-on la hauteur H du support d'un panneau ?",["H = sin(α) × L","H = L + α","H = cos(α) / L","H = 12 × L"],"L est la longueur du module. La distance entre supports : X = cotan(α) × H."],
+["Comment nettoyer les panneaux ?",["Eau et éponge, sans détergent, tôt le matin ou tard le soir","Avec détergent en plein soleil","Au jet fort à midi","Il ne faut jamais les nettoyer"],"On évite de nettoyer quand les modules sont chauds. Aucun détergent."],
+["Quelle est la fréquence de la maintenance préventive des modules PV ?",["Trimestrielle","Tous les jours","Tous les 10 ans","Jamais"],"Le cours indique une maintenance trimestrielle, avec un carnet d'entretien."],
+["Résistance de la prise de terre supérieure à 10 Ω : que faire ?",["Arroser à l'eau salée ou ajouter des piquets en cuivre","L'ignorer","Débrancher les panneaux","Repeindre le piquet"],"Il faut réduire la résistance du sol."],
+["En quelles sections divise-t-on l'armoire électrique ?",["TBT (12/24/48 Vcc) et BT (230 Vca)","Haute et moyenne tension","Série et parallèle","Test et réel"],"Elle regroupe aussi les protections : fusibles, disjoncteur, parafoudres."],
+["Un onduleur réseau (sans stockage) lors d'une panne du réseau :",["S'arrête de fonctionner","Continue à alimenter la maison","Charge les batteries","Passe en mode hybride"],"En cas de défaillance du réseau, l'onduleur PV s'arrête. Avec stockage, l'onduleur chargeur crée son propre réseau."]
+]}
+];
+function mel(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
+window.ouvrirFormation=function(){
+  var ov=document.createElement('div');ov.className='fm-overlay';ov.style.cssText+=';align-items:flex-start;overflow-y:auto';
+  var box=document.createElement('div');box.className='fm-box';box.style.cssText='max-width:520px;width:100%;margin:10px auto';
+  ov.appendChild(box);document.body.appendChild(ov);
+  var best=lire('tsdim_quiz',{})||{};
+  function fermer(){ov.remove()}
+  function accueil(){
+    var h='<h2>🎓 Formation</h2><p style="font-size:.9rem">Testez vos connaissances en énergie solaire photovoltaïque (basé sur le cours). Choisissez un thème :</p>';
+    CH.forEach(function(c,i){
+      var b=best['c'+i];
+      h+='<button class="btn-action primary" data-c="'+i+'" style="width:100%;margin:6px 0;text-align:left">'+c.t+' <small>('+c.q.length+' questions'+(b!=null?' · meilleur : '+b+'/'+c.q.length:'')+')</small></button>';
+    });
+    var tot=0;CH.forEach(function(c){tot+=c.q.length});
+    h+='<button class="btn-action warning" data-c="all" style="width:100%;margin:6px 0">🎯 Tout mélanger (20 questions)</button>';
+    h+='<div class="fm-actions"><button class="btn-action warning" id="qFerme">Fermer</button></div>';
+    box.innerHTML=h;
+    box.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){
+      var c=b.getAttribute('data-c'),liste;
+      if(c==='all'){liste=[];CH.forEach(function(x){liste=liste.concat(x.q)});liste=mel(liste).slice(0,20);jouer(liste,'all',CH.length)}
+      else{liste=mel(CH[+c].q);jouer(liste,'c'+c)}
+    }});
+    box.querySelector('#qFerme').onclick=fermer;
+  }
+  function jouer(liste,cle){
+    var n=0,score=0;
+    function question(){
+      var q=liste[n],bonne=q[1][0],opts=mel(q[1]);
+      var h='<div style="font-size:.8rem;color:#64748b">Question '+(n+1)+' / '+liste.length+' · Score : '+score+'</div>'
+       +'<h3 style="margin:10px 0">'+q[0]+'</h3>';
+      opts.forEach(function(o,i){h+='<button class="btn-action" data-o="'+i+'" style="width:100%;margin:5px 0;text-align:left;background:#f1f5f9;color:#0f172a;border:1px solid #cbd5e1">'+o+'</button>'});
+      h+='<div id="qRep"></div>';
+      box.innerHTML=h;
+      var fini=false;
+      box.querySelectorAll('[data-o]').forEach(function(b){b.onclick=function(){
+        if(fini)return;fini=true;
+        var ok=opts[+b.getAttribute('data-o')]===bonne;if(ok)score++;
+        box.querySelectorAll('[data-o]').forEach(function(x){
+          var t=opts[+x.getAttribute('data-o')];
+          if(t===bonne){x.style.background='#16a34a';x.style.color='#fff';x.style.borderColor='#16a34a'}
+          else if(x===b){x.style.background='#dc2626';x.style.color='#fff';x.style.borderColor='#dc2626'}
+        });
+        var r=box.querySelector('#qRep');
+        r.innerHTML='<p style="margin:10px 0"><b>'+(ok?'✅ Bonne réponse !':'❌ Mauvaise réponse.')+'</b><br>'+q[2]+'</p>'
+          +'<button class="btn-action primary" id="qSuiv" style="width:100%">'+(n+1<liste.length?'Question suivante ➜':'Voir mon résultat')+'</button>';
+        r.querySelector('#qSuiv').onclick=function(){n++;if(n<liste.length)question();else fin()};
+      }});
+    }
+    function fin(){
+      var p=Math.round(score*100/liste.length);
+      if(cle!=='all'){if(best[cle]==null||score>best[cle]){best[cle]=score;ecrire('tsdim_quiz',best)}}
+      var m=p>=80?'🏆 Excellent ! Vous maîtrisez ce thème.':p>=50?'👍 Bien, continuez à réviser.':'📚 Relisez le cours puis réessayez.';
+      box.innerHTML='<h2>Résultat</h2><p style="font-size:2rem;text-align:center;margin:10px 0"><b>'+score+' / '+liste.length+'</b> ('+p+' %)</p><p style="text-align:center">'+m+'</p>'
+       +'<div class="fm-actions"><button class="btn-action warning" id="qMenu">Menu</button><button class="btn-action primary" id="qRej">Rejouer</button></div>';
+      box.querySelector('#qMenu').onclick=accueil;
+      box.querySelector('#qRej').onclick=function(){
+        if(cle==='all'){var l=[];CH.forEach(function(x){l=l.concat(x.q)});jouer(mel(l).slice(0,20),'all')}
+        else jouer(mel(CH[+cle.slice(1)].q),cle)};
+    }
+    question();
+  }
+  accueil();
+};
+})();
+bouton('🎓 Formation',window.ouvrirFormation);
+/* Documents PDF (fiches techniques onduleurs, etc.) : modifiez cette liste */
+var DOCS_PDF=[
+  {cat:"Onduleurs Deye",titre:"Hybride monophasé SUN-3.6 à 5K-SG03LP1-EU : manuel (EN)",url:"pdf/onduleur-deye-hybride-monophase-SUN-3.6-5K-manuel.pdf"},
+  {cat:"Onduleurs Deye",titre:"Hybride triphasé SUN-5 à 25K-SG01HP3-EU : fiche technique (FR)",url:"pdf/onduleur-deye-hybride-triphase-SUN-5-25K-fiche-technique.pdf"},
+  {cat:"Onduleurs Deye",titre:"Solution industrielle et commerciale 100 kW à 2,5 MW (FR)",url:"pdf/onduleur-deye-solution-industrielle-100kW-2.5MW.pdf"},
+  {cat:"Onduleurs",titre:"IVEM8048-II : manuel de l'utilisateur (FR)",url:"pdf/onduleur-IVEM8048-II-manuel-fr.pdf"},
+  {cat:"Onduleurs",titre:"IVEM8048-II / IVEM12048-II : guide d'utilisation (EN)",url:"pdf/onduleur-IVEM8048-II-IVEM12048-II-guide.pdf"},
+  {cat:"Onduleurs",titre:"IVPS / IVPM : guide d'utilisation (EN)",url:"pdf/onduleur-IVPS-IVPM-guide.pdf"},
+  {cat:"Onduleurs",titre:"IVPM5048 à 10048 : fiche technique",url:"pdf/onduleur-IVPM5048-10048-fiche-technique.pdf"},
+  {cat:"Batteries",titre:"FLA48200-P / FLA48230 : manuel d'utilisation (FR)",url:"pdf/batterie-FLA48200-P-FLA48230-manuel-fr.pdf"},
+  {cat:"Batteries",titre:"FLA48350TG2 : guide d'utilisation (EN)",url:"pdf/batterie-FLA48350TG2-guide.pdf"},
+  {cat:"Batteries",titre:"FLA48500 : guide d'utilisation (EN)",url:"pdf/batterie-FLA48500-guide.pdf"},
+  {cat:"Batteries",titre:"LPBF48350 : guide d'utilisation (EN)",url:"pdf/batterie-LPBF48350-guide.pdf"},
+  {cat:"Batteries",titre:"LUX-Y-48100HG01 lithium : guide d'utilisation (EN)",url:"pdf/batterie-LUX-Y-48100HG01-guide.pdf"}
+];
+window.ouvrirDocuments=function(){
+  var ov=document.createElement('div');ov.className='fm-overlay';ov.style.cssText+=';align-items:flex-start;overflow-y:auto';
+  var h='<div class="fm-box" style="max-width:520px;width:100%;margin:10px auto"><h2>📄 Documents PDF</h2>';
+  if(!DOCS_PDF.length)h+='<p>Aucun document pour le moment.</p>';
+  else{
+    var cats=[];DOCS_PDF.forEach(function(d){var c=d.cat||'Documents';if(cats.indexOf(c)<0)cats.push(c)});
+    cats.forEach(function(c){
+      h+='<h3 style="margin:14px 0 6px;color:var(--primary)">'+c+'</h3>';
+      DOCS_PDF.filter(function(d){return (d.cat||'Documents')===c}).forEach(function(d){
+        h+='<a class="btn-action primary" style="display:block;text-align:left;text-decoration:none;margin:6px 0" href="'+d.url+'" target="_blank" rel="noopener" download>📥 '+d.titre+'</a>';
+      });
+    });
+  }
+  h+='<div class="fm-actions"><button class="btn-action warning" id="dcFerme">Fermer</button></div></div>';
+  ov.innerHTML=h;document.body.appendChild(ov);
+  ov.querySelector('#dcFerme').onclick=function(){ov.remove()};
+};
+bouton('📄 Documents PDF',window.ouvrirDocuments);
 /* Bouton Personnaliser : regroupe les autres boutons */
 (function(){
 if(!nav)return;
@@ -2274,7 +2447,7 @@ $('lConf').onclick=function(e){e.preventDefault();window.ouvrirTexteLegal('conf'
 var st=document.createElement('style');
 st.textContent='html.dark{filter:invert(1) hue-rotate(180deg);background:#fff}html.dark img,html.dark .acc-sun,html.dark #bandeauRappel{filter:invert(1) hue-rotate(180deg)}#bandeauRappel{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:4000;display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff7ed;border:1px solid #f58220;box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:.9rem;color:#7c2d12}#bandeauRappel button{margin-left:auto;padding:8px 12px;border:0;border-radius:10px;background:#f58220;color:#fff;font-weight:700}';
 document.head.appendChild(st);
-if(lire('tsdim_sombre',false))document.documentElement.classList.add('dark');
+document.documentElement.classList.remove('dark');
 
 /* ---------- 6. Rappel avant la fin de la licence ---------- */
 var band=document.createElement('div');band.id='bandeauRappel';band.innerHTML='<span id="rpTxt"></span><button id="rpBtn">Renouveler</button>';document.body.appendChild(band);
