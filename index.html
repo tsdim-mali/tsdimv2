@@ -2389,18 +2389,18 @@ window.ouvrirFormation=function(){
 bouton('🎓 Formation',window.ouvrirFormation);
 /* Documents PDF (fiches techniques onduleurs, etc.) : modifiez cette liste */
 var DOCS_PDF=[
-  {cat:"Onduleurs Deye",titre:"Hybride monophasé SUN-3.6 à 5K-SG03LP1-EU : manuel (EN)",url:"pdf/onduleur-deye-hybride-monophase-SUN-3.6-5K-manuel.pdf"},
-  {cat:"Onduleurs Deye",titre:"Hybride triphasé SUN-5 à 25K-SG01HP3-EU : fiche technique (FR)",url:"pdf/onduleur-deye-hybride-triphase-SUN-5-25K-fiche-technique.pdf"},
-  {cat:"Onduleurs Deye",titre:"Solution industrielle et commerciale 100 kW à 2,5 MW (FR)",url:"pdf/onduleur-deye-solution-industrielle-100kW-2.5MW.pdf"},
-  {cat:"Onduleurs",titre:"IVEM8048-II : manuel de l'utilisateur (FR)",url:"pdf/onduleur-IVEM8048-II-manuel-fr.pdf"},
-  {cat:"Onduleurs",titre:"IVEM8048-II / IVEM12048-II : guide d'utilisation (EN)",url:"pdf/onduleur-IVEM8048-II-IVEM12048-II-guide.pdf"},
-  {cat:"Onduleurs",titre:"IVPS / IVPM : guide d'utilisation (EN)",url:"pdf/onduleur-IVPS-IVPM-guide.pdf"},
-  {cat:"Onduleurs",titre:"IVPM5048 à 10048 : fiche technique",url:"pdf/onduleur-IVPM5048-10048-fiche-technique.pdf"},
-  {cat:"Batteries",titre:"FLA48200-P / FLA48230 : manuel d'utilisation (FR)",url:"pdf/batterie-FLA48200-P-FLA48230-manuel-fr.pdf"},
-  {cat:"Batteries",titre:"FLA48350TG2 : guide d'utilisation (EN)",url:"pdf/batterie-FLA48350TG2-guide.pdf"},
-  {cat:"Batteries",titre:"FLA48500 : guide d'utilisation (EN)",url:"pdf/batterie-FLA48500-guide.pdf"},
-  {cat:"Batteries",titre:"LPBF48350 : guide d'utilisation (EN)",url:"pdf/batterie-LPBF48350-guide.pdf"},
-  {cat:"Batteries",titre:"LUX-Y-48100HG01 lithium : guide d'utilisation (EN)",url:"pdf/batterie-LUX-Y-48100HG01-guide.pdf"}
+  {cat:"Onduleurs Deye",titre:"Hybride monophasé SUN-3.6 à 5K-SG03LP1-EU : manuel (EN)",url:"onduleur-deye-hybride-monophase-SUN-3.6-5K-manuel.pdf"},
+  {cat:"Onduleurs Deye",titre:"Hybride triphasé SUN-5 à 25K-SG01HP3-EU : fiche technique (FR)",url:"onduleur-deye-hybride-triphase-SUN-5-25K-fiche-technique.pdf"},
+  {cat:"Onduleurs Deye",titre:"Solution industrielle et commerciale 100 kW à 2,5 MW (FR)",url:"onduleur-deye-solution-industrielle-100kW-2.5MW.pdf"},
+  {cat:"Onduleurs",titre:"IVEM8048-II : manuel de l'utilisateur (FR)",url:"onduleur-IVEM8048-II-manuel-fr.pdf"},
+  {cat:"Onduleurs",titre:"IVEM8048-II / IVEM12048-II : guide d'utilisation (EN)",url:"onduleur-IVEM8048-II-IVEM12048-II-guide.pdf"},
+  {cat:"Onduleurs",titre:"IVPS / IVPM : guide d'utilisation (EN)",url:"onduleur-IVPS-IVPM-guide.pdf"},
+  {cat:"Onduleurs",titre:"IVPM5048 à 10048 : fiche technique",url:"onduleur-IVPM5048-10048-fiche-technique.pdf"},
+  {cat:"Batteries",titre:"FLA48200-P / FLA48230 : manuel d'utilisation (FR)",url:"batterie-FLA48200-P-FLA48230-manuel-fr.pdf"},
+  {cat:"Batteries",titre:"FLA48350TG2 : guide d'utilisation (EN)",url:"batterie-FLA48350TG2-guide.pdf"},
+  {cat:"Batteries",titre:"FLA48500 : guide d'utilisation (EN)",url:"batterie-FLA48500-guide.pdf"},
+  {cat:"Batteries",titre:"LPBF48350 : guide d'utilisation (EN)",url:"batterie-LPBF48350-guide.pdf"},
+  {cat:"Batteries",titre:"LUX-Y-48100HG01 lithium : guide d'utilisation (EN)",url:"batterie-LUX-Y-48100HG01-guide.pdf"}
 ];
 window.ouvrirDocuments=function(){
   var ov=document.createElement('div');ov.className='fm-overlay';ov.style.cssText+=';align-items:flex-start;overflow-y:auto';
@@ -2411,7 +2411,7 @@ window.ouvrirDocuments=function(){
     cats.forEach(function(c){
       h+='<h3 style="margin:14px 0 6px;color:var(--primary)">'+c+'</h3>';
       DOCS_PDF.filter(function(d){return (d.cat||'Documents')===c}).forEach(function(d){
-        h+='<a class="btn-action primary" style="display:block;text-align:left;text-decoration:none;margin:6px 0" href="'+d.url+'" target="_blank" rel="noopener" download>📥 '+d.titre+'</a>';
+        h+='<a class="btn-action primary" style="display:block;text-align:left;text-decoration:none;margin:6px 0" href="'+d.url+'" target="_blank" rel="noopener">📥 '+d.titre+'</a>';
       });
     });
   }
