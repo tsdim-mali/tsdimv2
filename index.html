@@ -2389,6 +2389,7 @@ window.ouvrirFormation=function(){
 bouton('🎓 Formation',window.ouvrirFormation);
 /* Documents PDF (fiches techniques onduleurs, etc.) : modifiez cette liste */
 var DOCS_PDF=[
+  {cat:"Autres documents (Google Drive)",titre:"Ouvrir les autres PDF sur Google Drive",url:"https://drive.google.com/file/d/1sMPf2JjlUHnKyT_mBb6vnT7TCtqSTnz8/view?usp=drivesdk"},
   {cat:"Onduleurs Deye",titre:"Hybride monophasé SUN-3.6 à 5K-SG03LP1-EU : manuel (EN)",url:"onduleur-deye-hybride-monophase-SUN-3.6-5K-manuel.pdf"},
   {cat:"Onduleurs Deye",titre:"Hybride triphasé SUN-5 à 25K-SG01HP3-EU : fiche technique (FR)",url:"onduleur-deye-hybride-triphase-SUN-5-25K-fiche-technique.pdf"},
   {cat:"Onduleurs Deye",titre:"Solution industrielle et commerciale 100 kW à 2,5 MW (FR)",url:"onduleur-deye-solution-industrielle-100kW-2.5MW.pdf"},
@@ -2411,13 +2412,21 @@ window.ouvrirDocuments=function(){
     cats.forEach(function(c){
       h+='<h3 style="margin:14px 0 6px;color:var(--primary)">'+c+'</h3>';
       DOCS_PDF.filter(function(d){return (d.cat||'Documents')===c}).forEach(function(d){
-        h+='<a class="btn-action primary" style="display:block;text-align:left;text-decoration:none;margin:6px 0" href="'+d.url+'" target="_blank" rel="noopener">📥 '+d.titre+'</a>';
+        h+='<a class="btn-action primary lienPdf" data-u="'+d.url+'" style="display:block;text-align:left;text-decoration:none;margin:6px 0" href="'+d.url+'" target="_blank" rel="noopener">📥 '+d.titre+'</a>';
       });
     });
   }
   h+='<div class="fm-actions"><button class="btn-action warning" id="dcFerme">Fermer</button></div></div>';
   ov.innerHTML=h;document.body.appendChild(ov);
   ov.querySelector('#dcFerme').onclick=function(){ov.remove()};
+  /* choisit le bon nom de fichier (avec ou sans « -1 » ajouté au téléversement) */
+  Array.prototype.forEach.call(ov.querySelectorAll('.lienPdf'),function(a){
+    var u=a.getAttribute('data-u');if(/^https?:/i.test(u))return;var c=[u,u.replace(/\.pdf$/i,'-1.pdf')];
+    (function essai(i){
+      if(i>=c.length){a.style.opacity='.5';a.textContent+=' (indisponible)';return}
+      fetch(c[i],{method:'HEAD',cache:'no-store'}).then(function(r){if(r.ok)a.href=c[i];else essai(i+1)}).catch(function(){})
+    })(0);
+  });
 };
 bouton('📄 Documents PDF',window.ouvrirDocuments);
 /* Bouton Personnaliser : regroupe les autres boutons */
