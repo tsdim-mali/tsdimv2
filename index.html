@@ -534,7 +534,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
     <p class="acc-desc">Calculez en quelques secondes les panneaux, batteries et onduleur adaptés à vos besoins, puis générez votre facture PDF.</p>
     <div class="acc-feats"><span>⚡ Calcul des appareils</span><span>🔋 Panneaux &amp; batteries</span><span>🔌 Câble PV</span><span>🧾 Facture PDF</span></div>
     <button id="btnEntrer" onclick="entrerSite()">Entrer ▶</button>
-    <p class="acc-essai" id="accEssai">⏳ Essai gratuit de 1 minute, qui démarre quand vous entrez.</p>
+    <p class="acc-essai" id="accEssai">⏳ Essai gratuit de 5 jours, qui démarre quand vous entrez.</p>
     <p class="acc-contact">TATA SERVICE · 📞 +223 60 38 03 24</p>
   </div>
 </div>
@@ -1716,6 +1716,8 @@ function ouvrirSite(){
   setTimeout(ouvrirEntreprise,600);
 }
 function modeCompte(){return (typeof URL_COMPTES==='string'&&URL_COMPTES)||(Array.isArray(COMPTES)&&COMPTES.length)}
+/* mode comptes : pas de date par défaut, la licence vient de la connexion ou de l'essai */
+try{if(modeCompte())DATE_LIMITE=null}catch(e){}
 function entrerSite(){
   if(modeCompte())connexionAuto(function(){ouvrirSite()});
   else ouvrirSite();
@@ -1781,7 +1783,7 @@ function verifierConnexion(u,p,silencieux){
     var rr=fin(exp);rr.role=c.r||'client';return rr;
   });
 }
-var ESSAI_JOURS=2;
+var ESSAI_JOURS=5;
 function limiteEssai(creer){
   var k='tsdim_essai',v=lireSigne(k);
   if(v==='ALTERE')return new Date(0);
@@ -2209,7 +2211,7 @@ window.ouvrirFactures=function(){
 var CGU='<p><i>Modèle à faire relire avant diffusion.</i></p>'
  +'<p><b>1. Objet.</b> TSDim est un outil d\'aide au dimensionnement d\'installations solaires et à la création de factures.</p>'
  +'<p><b>2. Résultats indicatifs.</b> Les calculs sont des estimations. Ils ne remplacent pas l\'étude ou la validation d\'un professionnel qualifié. L\'utilisateur reste seul responsable du choix du matériel, de l\'installation et du respect des règles de sécurité. Le fournisseur ne peut être tenu responsable des dommages liés à l\'usage des résultats.</p>'
- +'<p><b>3. Accès.</b> L\'accès est personnel et non transférable. Un essai gratuit de 2 jours est proposé une fois par appareil. Le fournisseur peut suspendre un accès en cas de partage ou d\'abus.</p>'
+ +'<p><b>3. Accès.</b> L\'accès est personnel et non transférable. Un essai gratuit de 5 jours est proposé une fois par appareil. Le fournisseur peut suspendre un accès en cas de partage ou d\'abus.</p>'
  +'<p><b>4. Paiement.</b> Les licences se paient par Orange Money, Moov Money ou Wave. L\'accès est activé après vérification du paiement. Sauf mention contraire, aucun remboursement après activation.</p>'
  +'<p><b>5. Disponibilité.</b> Le service est fourni « en l\'état », sans garantie d\'absence d\'interruption.</p>'
  +'<p><b>6. Factures.</b> L\'utilisateur est responsable du contenu des factures qu\'il émet (prix, TVA, mentions légales).</p>';
@@ -2508,6 +2510,12 @@ window.afficherPaiement=function(op){
   $('pyCopy').onclick=function(){copierTexte(m.num.replace(/\s/g,''))};
 };
 var bm=document.querySelector('#modalReabonnement button[onclick*="moov"]');if(bm)bm.textContent='🔵 Payer via Moov Africa (Malitel)';
+(function(){var m=document.getElementById('modalReabonnement');if(!m||!m.firstElementChild||document.getElementById('btnJeMeConnecte'))return;
+  var bx=m.firstElementChild,bt=document.createElement('button');bt.id='btnJeMeConnecte';
+  bt.textContent="🔐 J'ai déjà un identifiant : me connecter";
+  bt.style.cssText='margin-top:12px;width:100%;padding:12px;border:none;border-radius:8px;background:#16a34a;color:#fff;font-weight:600;cursor:pointer;font-size:.9rem';
+  bt.onclick=function(){try{store.removeItem('tsdim_compte')}catch(e){}location.reload()};
+  bx.insertBefore(bt,bx.firstElementChild.nextSibling.nextSibling)})();
 
 /* ---------- 7b. Paiement en ligne automatique (Orange Money / carte) ---------- */
 function payOn(){return typeof URL_PAIEMENT==='string'&&URL_PAIEMENT!==''}
