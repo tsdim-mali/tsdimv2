@@ -712,7 +712,8 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
     </div>
     <div class="drawer-body">
       <h3>📘 Comment utiliser l'application</h3>
-      <p>1. Cliquez sur <strong>Ajouter un appareil</strong> pour renseigner vos équipements (Puissance, Quantité, Heures d'utilisation).</p>
+      <p>1. Cliquez sur <strong>Ajouter un appareil</strong> pour renseigner vos équipements (Puissance, Quantité, Heures de jour et heures de nuit).</p>
+      <p>ℹ️ Les <strong>panneaux</strong> sont calculés sur toute l'énergie (jour + nuit). Les <strong>batteries</strong> ne couvrent que l'énergie de <strong>nuit</strong>, multipliée par les jours d'autonomie.</p>
       <p>2. Ajustez les paramètres d'ensoleillement et de tension selon votre installation.</p>
       <p>3. Lancez le calcul pour obtenir le nombre exact de panneaux, batteries et la taille de l'onduleur.</p>
       <p>4. Enregistrez ou partagez directement votre devis professionnel.</p>
@@ -767,7 +768,6 @@ const COMPTES = [
   // ---- SUPER ADMIN (ne jamais supprimer) ----
   {"u":"superadmin","h":"tpciyanRqtiKkDWpBJUzLvGt1ar_n8pk_2hXjVEblk0","e":"2099-12-31","r":"super"},
   // ---- 15 JOURS (15 jours) ----
-  {"u":"test3","h":"biZB54vrnlTAGKrzbMRjT59Y_4OeY7vLZhuVgH-_FDw","m":3},
   {"u":"j15-01","h":"pUwGe2L2Ewl4euV2u9XSI2pNoXCH3p6QrmQmmnlK9uU","j":15},
   {"u":"j15-02","h":"GXvdk_5eQhBUQMoFaiIkciNwtjyrHk4T-jail6pR9ZI","j":15},
   {"u":"j15-03","h":"QPCDLWRQEclxa0UZ62gCmAfTvNQ1rwypMadfXBiRdSM","j":15},
@@ -779,7 +779,7 @@ const COMPTES = [
   {"u":"j15-09","h":"YdvKw2AwPP1ZSrb1aFLWzGIBExSgPSLlW9kSpgsF3p8","j":15},
   {"u":"j15-10","h":"NkewlOcOnE_SXp9lHk1oo7vbGsCTpxYzSmwZrv3rZnY","j":15},
   // ---- 1 MOIS (30 jours) ----
-  {"u":"m1-01","h":"rGbBZoUr1XjyoHLLqqvS1Sr9kKzdZaixHD2AJvfWo6s","j":31},
+  {"u":"m1-01","h":"rGbBZoUr1XjyoHLLqqvS1Sr9kKzdZaixHD2AJvfWo6s","j":30},
   {"u":"m1-02","h":"LZLqQO5RbyvGieRp_PbU8AXLYfSfWPvLbVROrvIdM94","j":30},
   {"u":"m1-03","h":"pD57mMyofULEZQfMfyxtE_r6pGydZlg99w0uS-YC5rA","j":30},
   {"u":"m1-04","h":"PURVngQmtc7xKTWap22h0B-Bxr6fSn4bhfKMkwcg95Y","j":30},
@@ -1016,7 +1016,7 @@ function afficherTable() {
   let table = document.getElementById("table");
   
   if (appareils.length === 0) {
-    table.innerHTML = `<tr><td colspan="6" style="color: #64748b; padding: 20px;">Aucun appareil ajouté pour le moment. Cliquez sur "Ajouter un appareil".</td></tr>`;
+    table.innerHTML = `<tr><td colspan="7" style="color: #64748b; padding: 20px;">Aucun appareil ajouté pour le moment. Cliquez sur "Ajouter un appareil".</td></tr>`;
     return;
   }
 
@@ -1025,7 +1025,8 @@ function afficherTable() {
       <th>Appareil</th>
       <th>Puissance (W)</th>
       <th>Qté</th>
-      <th>Heures/j</th>
+      <th>☀️ Jour (h)</th>
+      <th>🌙 Nuit (h)</th>
       <th>Total (Wh)</th>
       <th>Actions</th>
     </tr>
@@ -1037,8 +1038,9 @@ function afficherTable() {
         <td><strong>${app.nom}</strong></td>
         <td>${app.puissance} W</td>
         <td>${app.quantite}</td>
-        <td>${app.heures}h</td>
-        <td><strong>${app.total} Wh</strong></td>
+        <td>${app.hj}h</td>
+        <td>${app.hn}h</td>
+        <td><strong>${app.total} Wh</strong><br><small style="color:#64748b">☀️ ${app.puissance*app.quantite*app.hj} · 🌙 ${app.puissance*app.quantite*app.hn}</small></td>
         <td>
           <button onclick="modifier(${i})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;" title="Modifier">✏️</button>
           <button onclick="supprimer(${i})" style="background:none; border:none; cursor:pointer; font-size:1.1rem;" title="Supprimer">❌</button>
@@ -1173,10 +1175,14 @@ function calculer() {
   let pert = parseFloat(document.getElementById("pert").value);
 
   let totalWh = 0;
+  let whJour = 0;
+  let whNuit = 0;
   let puissanceTotale = 0;
 
   appareils.forEach(app => {
     totalWh += app.total;
+    whJour += app.puissance * app.quantite * app.hj;
+    whNuit += app.puissance * app.quantite * app.hn;
     puissanceTotale += app.puissance * app.quantite;
   });
 
@@ -1188,12 +1194,13 @@ function calculer() {
     panneauxHTML += `<label style="display:block; margin:6px 0; cursor:pointer;"><input type="radio" name="panneau" value="${nb} panneaux ${pv}W"> 🔸 <strong>${nb}</strong> panneaux solaires de <strong>${pv}W</strong></label>`;
   });
 
-  let batterieWh = totalWh * autonomie;
+  // Les batteries ne couvrent que la consommation de NUIT, multipliée par les jours d'autonomie
+  let batterieWh = whNuit * autonomie;
   let batteriesHTML = "";
 
   if (tension === 48) {
     let kwhChoisi = parseFloat(document.getElementById("choixLithium").value);
-    let besoinEnergieKWh = (totalWh / dod) / 1000;
+    let besoinEnergieKWh = (batterieWh / dod) / 1000;
     let nbModulesLithium = Math.max(1, Math.round(Math.round((besoinEnergieKWh / kwhChoisi) * 1e6) / 1e6));
     let capaciteTotaleChoisie = nbModulesLithium * kwhChoisi;
 
@@ -1256,6 +1263,8 @@ function calculer() {
     <h2 style="color:#0f766e; margin-bottom:12px;">📊 Résultats de l'Étude</h2>
     <p>⚡ Puissance Crête Totale : <strong>${puissanceTotale} W</strong></p>
     <p>🔋 Énergie Journalière : <strong>${totalWh} Wh / jour</strong></p>
+    <p>☀️ Énergie de jour : <strong>${whJour} Wh</strong> (consommée directement par les panneaux)</p>
+    <p>🌙 Énergie de nuit : <strong>${whNuit} Wh</strong> (fournie par les batteries${autonomie > 1 ? ', ×' + autonomie + ' jours d\'autonomie = ' + batterieWh + ' Wh' : ''})</p>
     <hr style="border:0; border-top:1px solid #e2e8f0; margin:15px 0;">
     <h3 style="color:#0f766e;">☀️ Panneaux Recommandés</h3>
     ${panneauxHTML}
@@ -1535,22 +1544,31 @@ function formModal(titre,champs,ok,msg){
     ov.remove();ok(v);
   };
 }
+function formAppareil(titre,a,fin){
+  formModal(titre,[
+    {label:"Nom de l'appareil",ph:'Ex: Ampoule LED',value:a.nom},
+    {label:'Puissance (W)',type:'number',value:a.puissance},
+    {label:'Quantité',type:'number',value:a.quantite},
+    {label:'☀️ Heures de JOUR (0-24)',type:'number',min:0,max:24,value:a.hj},
+    {label:'🌙 Heures de NUIT (0-24)',type:'number',min:0,max:24,value:a.hn}
+  ],function(v){
+    if(v[3]+v[4]>24){alert('⚠️ Jour + nuit ne peut pas dépasser 24 h !');return formAppareil(titre,{nom:v[0],puissance:v[1],quantite:v[2],hj:v[3],hn:v[4]},fin)}
+    fin(v);
+  });
+}
 function ajouterAppareil(){
-  formModal('➕ Ajouter un appareil',[
-    {label:"Nom de l'appareil",ph:'Ex: Ampoule LED'},
-    {label:'Puissance (W)',type:'number'},
-    {label:'Quantité',type:'number'},
-    {label:'Heures / jour (0-24)',type:'number',min:0,max:24}
-  ],function(v){appareils.push({nom:v[0],puissance:v[1],quantite:Math.round(v[2]),heures:v[3],total:v[1]*Math.round(v[2])*v[3]});afficherTable();alert('✅ Appareil ajouté !')});
+  formAppareil('➕ Ajouter un appareil',{},function(v){
+    var q=Math.round(v[2]);
+    appareils.push({nom:v[0],puissance:v[1],quantite:q,hj:v[3],hn:v[4],heures:v[3]+v[4],total:v[1]*q*(v[3]+v[4])});
+    afficherTable();alert('✅ Appareil ajouté !');
+  });
 }
 function modifier(i){
   var a=appareils[i];
-  formModal('✏️ Modifier',[
-    {label:'Nom',value:a.nom},
-    {label:'Puissance (W)',type:'number',value:a.puissance},
-    {label:'Quantité',type:'number',value:a.quantite},
-    {label:'Heures / jour (0-24)',type:'number',min:0,max:24,value:a.heures}
-  ],function(v){a.nom=v[0];a.puissance=v[1];a.quantite=Math.round(v[2]);a.heures=v[3];a.total=a.puissance*a.quantite*a.heures;afficherTable();alert('✅ Modification effectuée !')});
+  formAppareil('✏️ Modifier',a,function(v){
+    a.nom=v[0];a.puissance=v[1];a.quantite=Math.round(v[2]);a.hj=v[3];a.hn=v[4];a.heures=a.hj+a.hn;
+    a.total=a.puissance*a.quantite*a.heures;afficherTable();alert('✅ Modification effectuée !');
+  });
 }
 function supprimer(i){formModal('❌ Supprimer',[],function(){appareils.splice(i,1);afficherTable()},'Voulez-vous supprimer cet appareil ?')}
 function enregistrer(){
@@ -1686,12 +1704,12 @@ function genererFacture(valPan,valBat,prix){
   doc.setTextColor(10,77,148);doc.setFontSize(11);doc.text('Détail des appareils (charge à alimenter)',20,y);y+=4;
   doc.setFillColor(240,244,248);doc.rect(20,y,170,8,'F');
   doc.setTextColor(30,41,59);doc.setFontSize(9);
-  doc.text('APPAREIL',23,y+5.5);doc.text('PUISSANCE',112,y+5.5,{align:'right'});doc.text('QTÉ',130,y+5.5,{align:'right'});doc.text('H/JOUR',150,y+5.5,{align:'right'});doc.text('ÉNERGIE (Wh/j)',187,y+5.5,{align:'right'});
+  doc.text('APPAREIL',23,y+5.5);doc.text('PUISSANCE',100,y+5.5,{align:'right'});doc.text('QTÉ',112,y+5.5,{align:'right'});doc.text('JOUR',128,y+5.5,{align:'right'});doc.text('NUIT',144,y+5.5,{align:'right'});doc.text('ÉNERGIE (Wh/j)',187,y+5.5,{align:'right'});
   y+=8;doc.setFont('helvetica','normal');var whTot=0;
   appareils.forEach(function(a){
     ensure(8);whTot+=a.total;
-    doc.text(doc.splitTextToSize(a.nom,70)[0],23,y+5.5);doc.text(a.puissance+' W',112,y+5.5,{align:'right'});
-    doc.text(String(a.quantite),130,y+5.5,{align:'right'});doc.text(a.heures+' h',150,y+5.5,{align:'right'});doc.text(String(a.total),187,y+5.5,{align:'right'});
+    doc.text(doc.splitTextToSize(a.nom,55)[0],23,y+5.5);doc.text(a.puissance+' W',100,y+5.5,{align:'right'});
+    doc.text(String(a.quantite),112,y+5.5,{align:'right'});doc.text(a.hj+' h',128,y+5.5,{align:'right'});doc.text(a.hn+' h',144,y+5.5,{align:'right'});doc.text(String(a.total),187,y+5.5,{align:'right'});
     doc.setDrawColor(241,245,249);doc.line(20,y+8,190,y+8);y+=8;
   });
   ensure(10);doc.setFont('helvetica','bold');
