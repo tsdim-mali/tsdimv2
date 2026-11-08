@@ -768,7 +768,6 @@ const COMPTES = [
   // ---- SUPER ADMIN (ne jamais supprimer) ----
   {"u":"superadmin","h":"tpciyanRqtiKkDWpBJUzLvGt1ar_n8pk_2hXjVEblk0","e":"2099-12-31","r":"super"},
   // ---- 15 JOURS (15 jours) ----
-  {"u":"test3","h":"biZB54vrnlTAGKrzbMRjT59Y_4OeY7vLZhuVgH-_FDw","m":3},
   {"u":"j15-01","h":"pUwGe2L2Ewl4euV2u9XSI2pNoXCH3p6QrmQmmnlK9uU","j":15},
   {"u":"j15-02","h":"GXvdk_5eQhBUQMoFaiIkciNwtjyrHk4T-jail6pR9ZI","j":15},
   {"u":"j15-03","h":"QPCDLWRQEclxa0UZ62gCmAfTvNQ1rwypMadfXBiRdSM","j":15},
@@ -776,18 +775,18 @@ const COMPTES = [
   {"u":"j15-05","h":"Zl6_HjzV6XEmEUYWVWBessavCchK_AgQWngUcZtMvGA","j":15},
   {"u":"j15-06","h":"-LtapAKeiE_pXpHBbNnE7YtCpN-yjWG3Oz6vEcaQWiU","j":15},
   {"u":"j15-07","h":"mxULbO0BZM-W9zhr6v3m3RhLydk1vXnsd2jRNnyplvg","j":15},
-  {"u":"j15-08","h":"hYcL5fUkNCz7ovUAIa52-5c9UzJBz8GupOEJQ-DYSjw","m":2},
+  {"u":"j15-08","h":"hYcL5fUkNCz7ovUAIa52-5c9UzJBz8GupOEJQ-DYSjw","j":15},
   {"u":"j15-09","h":"YdvKw2AwPP1ZSrb1aFLWzGIBExSgPSLlW9kSpgsF3p8","j":15},
   {"u":"j15-10","h":"NkewlOcOnE_SXp9lHk1oo7vbGsCTpxYzSmwZrv3rZnY","j":15},
   // ---- 1 MOIS (30 jours) ----
   {"u":"m1-01","h":"rGbBZoUr1XjyoHLLqqvS1Sr9kKzdZaixHD2AJvfWo6s","j":30},
   {"u":"m1-02","h":"LZLqQO5RbyvGieRp_PbU8AXLYfSfWPvLbVROrvIdM94","j":30},
-  {"u":"m1-03","h":"pD57mMyofULEZQfMfyxtE_r6pGydZlg99w0uS-YC5rA","j":30,"d":"RG49-8YHH"},
+  {"u":"m1-03","h":"pD57mMyofULEZQfMfyxtE_r6pGydZlg99w0uS-YC5rA","j":30},
   {"u":"m1-04","h":"PURVngQmtc7xKTWap22h0B-Bxr6fSn4bhfKMkwcg95Y","j":30},
   {"u":"m1-05","h":"DTADP9qH7Sh9zpEA8XxBrK_wS6NaDfoppOYid4OJzuw","j":30},
   {"u":"m1-06","h":"32UHWoVlHKGJa6CnkiJsNspHt1gIW1O8oxm6atugvUY","j":30},
   {"u":"m1-07","h":"ENT41bpsOjmeBVow3fknk4kiXe-dc7kJckpMANS9Lqk","j":30},
-  {"u":"m1-08","h":"4eW510W1_pfvD4FfCLEsdMp3PRQk8-RHiajiEjqaQKE","j":30,"d":"TPYF-XF4Y"},
+  {"u":"m1-08","h":"4eW510W1_pfvD4FfCLEsdMp3PRQk8-RHiajiEjqaQKE","j":30},
   {"u":"m1-09","h":"3y7FZaikIaN1yWhFPEtibkg9afS5ieXSJO0RGoviX6E","j":30},
   {"u":"m1-10","h":"rBvQ26lAgUGrEmDktxLrClxFuBy9XTXdbZnoJNVy9rg","j":30},
   {"u":"m1-11","h":"iWPfzh6AqpXDaP7Vj3bW79ddYvVfta0Uu7sWKNXNwns","j":30},
@@ -1583,15 +1582,32 @@ function enregistrer(){
 }
 function calculCableSimple(){
   formModal('🔌 Calcul Câble PV',[
-    {label:'Courant (A)',type:'number'},{label:'Tension (V)',type:'number'},{label:'Longueur (m)',type:'number'},
-    {label:'Conducteur',options:['cuivre','aluminium','or'],value:'cuivre'}
+    {label:'Type de circuit',options:['DC (courant continu)','AC monophasé','AC triphasé'],value:'DC (courant continu)'},
+    {label:'Courant I (A)',type:'number',min:0},
+    {label:'Tension U (V)',type:'number',min:0},
+    {label:'Longueur L simple, aller seulement (m)',type:'number',min:0},
+    {label:'Conducteur',options:['cuivre','aluminium','or'],value:'cuivre'},
+    {label:'Chute de tension admise ΔU (%)',type:'number',min:0,max:100,value:3},
+    {label:'cos φ (AC seulement, ignoré en DC)',type:'number',min:0,max:1,value:0.8}
   ],function(v){
-    var cond={cuivre:56,aluminium:35,or:45}[v[3]],section=(2*v[2]*v[0])/(cond*v[1]*0.03),
-        sec=[1.5,2.5,4,6,10,16,25,35,50,70].find(function(s){return section<=s})||70;
-    window.cableCalc={sec:sec,L:v[2]};
+    var mode=v[0].indexOf('triphasé')>=0?'tri':v[0].indexOf('mono')>=0?'mono':'dc';
+    var I=v[1],U=v[2],L=v[3],pct=v[5],cosphi=v[6];
+    if(!(I>0&&U>0&&L>0&&pct>0)){alert('⚠️ Courant, tension, longueur et chute de tension doivent être supérieurs à 0.');return}
+    if(mode!=='dc'&&!(cosphi>0&&cosphi<=1)){alert('⚠️ cos φ doit être compris entre 0 et 1.');return}
+    var rho=1/{cuivre:56,aluminium:35,or:45}[v[4]];          /* résistivité en Ω·mm²/m */
+    var dU=U*pct/100;                                          /* chute de tension admise en V */
+    var section,formule;
+    if(mode==='dc'){section=2*rho*L*I/dU;formule='S = 2 × ρ × L × I / ΔU';}
+    else if(mode==='mono'){section=2*rho*L*I*cosphi/dU;formule='S = 2 × ρ × L × I × cos φ / ΔU';}
+    else{section=Math.sqrt(3)*rho*L*I*cosphi/dU;formule='S = √3 × ρ × L × I × cos φ / ΔU';}
+    var sec=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150].find(function(x){return section<=x})||150;
+    window.cableCalc={sec:sec,L:L};
     var r=document.getElementById('resultat'),b=document.getElementById('blocCable');
     if(!b){b=document.createElement('div');b.id='blocCable';r.appendChild(b)}
-    b.innerHTML='<hr><h3>🔌 Calcul Câble Simple</h3>⚡ Courant : '+v[0]+' A <br>⚡ Tension : '+v[1]+' V <br>📏 Longueur : '+v[2]+' m <br>🧪 Conducteur : '+v[3]+' <br>📐 Section calculée : '+section.toFixed(2)+' mm² <br>🔥 Vous pouvez utiliser : '+sec+' mm² <br>';
+    b.innerHTML='<hr><h3>🔌 Calcul Câble Simple</h3>'
+      +'🔁 Circuit : '+v[0]+' <br>⚡ Courant : '+I+' A <br>⚡ Tension : '+U+' V <br>📏 Longueur : '+L+' m <br>🧪 Conducteur : '+v[4]+' (ρ = '+rho.toFixed(5)+' Ω·mm²/m) <br>'
+      +'📉 Chute admise : '+pct+' % = '+dU.toFixed(2)+' V <br>'+(mode!=='dc'?'📐 cos φ : '+cosphi+' <br>':'')
+      +'🧮 Formule : '+formule+' <br>📐 Section calculée : '+section.toFixed(2)+' mm² <br>🔥 Vous pouvez utiliser : '+sec+' mm² <br>';
   });
 }
 
