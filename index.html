@@ -907,15 +907,7 @@ function checkLicence() {
   
   return true;
 }
-function changerMdpAdmin() {
-  var ID = 'sacko';
-  var NOUVEAU = 'tatasacko2004';   // à remplacer
-  var sh = feuille_();
-  var c = trouver_(sh, ID);
-  if (!c) { Logger.log('Identifiant introuvable'); return; }
-  sh.getRange(c.ligne, col_('hash')).setValue(hash_(ID, NOUVEAU));
-  Logger.log('Mot de passe changé');
-}
+
 // Fonction de redirection WhatsApp pour le paiement de réabonnement
 function plateformePaiement(operateur) {
   let lienPaiement = "";
@@ -1754,7 +1746,7 @@ function genererFacture(valPan,valBat,prix){
 setInterval(function(){try{checkLicence()}catch(e){}},1000);
 
 function ouvrirSite(){
-  try{chargerDebut();checkLicence();majAdmin();();}catch(e){}
+  try{chargerDebut();checkLicence();majAdmin();}catch(e){}
   var a=document.getElementById('accueil');a.classList.add('sortie');setTimeout(function(){a.style.display='none'},450);
   setTimeout(ouvrirEntreprise,600);
 }
