@@ -907,7 +907,6 @@ function checkLicence() {
   
   return true;
 }
-
 // Fonction de redirection WhatsApp pour le paiement de réabonnement
 function plateformePaiement(operateur) {
   let lienPaiement = "";
@@ -2605,54 +2604,6 @@ if(payOn()){
 /* ---------- 8. Fonctionnement hors ligne ---------- */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
 })();
-
-<form id="f">
-  <input id="u" placeholder="Identifiant" autocomplete="username">
-  <input id="p" type="password" placeholder="Mot de passe" autocomplete="current-password">
-  <button type="submit">Se connecter</button>
-  <p id="msg"></p>
-</form>
-
-<div id="app" hidden>
-  <!-- ici : votre contenu (quiz, outils, etc.) -->
-</div>
-
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzHvDRUsUHvpyQ0L2afkwmsIpRif_0eaR1CArLpp9avN75xTAWBw7nv8kI4oXKm0Ek5/exec";
-
-// Identifiant d'appareil : créé une fois, gardé dans le navigateur
-function appareil() {
-  let a = localStorage.getItem("appareil");
-  if (!a) {
-    a = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
-    localStorage.setItem("appareil", a);
-  }
-  return a;
-}
-
-document.getElementById("f").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const msg = document.getElementById("msg");
-  msg.textContent = "Connexion…";
-  try {
-    const q = new URLSearchParams({
-      u: document.getElementById("u").value.trim(),
-      p: document.getElementById("p").value,
-      a: appareil()
-    });
-    const r = await fetch(API + "?" + q);
-    const d = await r.json();
-    if (d.ok) {
-      document.getElementById("f").hidden = true;
-      document.getElementById("app").hidden = false;
-      // d.role = "admin" ou "client", d.expiration = date de fin
-    } else {
-      msg.textContent = d.msg;
-    }
-  } catch (err) {
-    msg.textContent = "Serveur injoignable, réessayez.";
-  }
-});
 </script>
 </body>
 </html>
