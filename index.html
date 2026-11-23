@@ -2535,6 +2535,7 @@ window.afficherPaiement=function(op){
   if(!m.num){
     z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 6px">🔷 '+m.nom+' - '+MONTANT+' FCFA</p>'
       +'<p style="font-size:.85rem;color:#334155">Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
+      +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/">Cliquer pour Payer/a>'
       +'<a href="https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour, je veux payer ma licence TSDim par '+m.nom+'.')+'" target="_blank" rel="noopener" style="'+bw+';background:#25D366">💬 Demander le numéro '+m.nom+'</a>';
     return;
   }
