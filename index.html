@@ -1420,21 +1420,24 @@ function afficherPaiement(operateur) {
     `;
   } 
   else if (operateur === 'wave') {
-    zoneDetails.innerHTML = `
-      <p style="font-size: 0.85rem; font-weight: 600; color: #11b8ff; margin-top: 0; margin-bottom: 4px;">
-        🔷 Wave (Montant : 2000 FCFA)
-      </p>
-      <p style="font-size: 0.8rem; color: #334155; margin: 5px 0;">
-        Effectuez un transfert de <strong>2000 FCFA</strong> sur notre numéro marchand, puis envoyez-nous la capture.
-      </p>
-      <img src="" onerror="this.style.display='none'" alt="QR Code Wave n'est pas disponible  envoyer par +223 60 38 03 24 " style="width: 140px; height: 140px; object-fit: contain; display: block; margin: 0 auto; border-radius: 6px;">
-      <span style="font-size: 0.75rem; color: #64748b; margin-top: 6px; display: block; font-family: monospace; font-weight: bold;">ID : </span>
-       <p style="font-size: 0.8rem; color: #334155; margin: 5px 0;">
-        Effectuez un transfert de <strong>2000 FCFA</strong> et envoyez-nous le reçu.
-      </p>
-      <a href="https://wa.me/${numeroWhatsApp}?text=${message}" target="_blank" style="display: block; margin-top: 10px; background: #25D366; color: white; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: bold;">💬 Envoyer la preuve sur WhatsApp</a>
-    `;
-  } 
+  const lienWave = "https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/";
+  const montantWave = "2000 FCFA";
+
+  zoneDetails.innerHTML = `
+    <p style="font-size: 0.85rem; font-weight: 600; color: #11b8ff; margin-top: 0; margin-bottom: 4px;">
+      🔷 Wave — Ancien (Montant : ${montantWave})
+    </p>
+    <p style="font-size: 0.8rem; color: #334155; margin: 5px 0;">
+      Cliquez sur le bouton ci-dessous pour payer <strong>${montantWave}</strong> à <strong>TS Dim</strong> via Wave, puis envoyez la preuve sur WhatsApp.
+    </p>
+    <a href="${lienWave}" target="_blank" style="display: block; margin-top: 10px; background: #11b8ff; color: white; padding: 9px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: bold; text-align: center;">
+      💳 Payer ${montantWave} avec Wave
+    </a>
+    <a href="https://wa.me/${numeroWhatsApp}?text=${message}" target="_blank" style="display: block; margin-top: 8px; background: #25D366; color: white; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: bold; text-align: center;">
+      💬 Envoyer la preuve sur WhatsApp
+    </a>
+  `;
+}
   else if (operateur === 'moov') {
     zoneDetails.innerHTML = `
       <p style="font-size: 0.85rem; font-weight: 600; color: #0066cc; margin-top: 0; margin-bottom: 4px;">
