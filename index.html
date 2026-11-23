@@ -30,7 +30,39 @@
   --border-radius: 12px;
   --transition: all 0.25s ease;
 }
+.btn-wave {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #1dc8ff; /* Bleu Wave */
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(29, 200, 255, 0.3);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.btn-wave:hover {
+  background-color: #09b3eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 200, 255, 0.4);
+}
+
+.btn-wave:active {
+  transform: translateY(0);
+}
+
+.btn-wave:focus-visible {
+  outline: 3px solid #005f87;
+  outline-offset: 2px;
+}
 /* Global : Empêcher le débordement horizontal sur mobile */
 body {
   font-family: 'Inter', sans-serif;
@@ -2535,7 +2567,9 @@ window.afficherPaiement=function(op){
   if(!m.num){
     z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 6px">🔷 '+m.nom+' - '+MONTANT+' FCFA</p>'
       +'<p style="font-size:.85rem;color:#334155">Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
-      +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/">Cliquer pour Payer/a>'
+      +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/" class="btn-wave" target="_blank" rel="noopener noreferrer">
+  Cliquer pour Payer
+</a>
       +'<a href="https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour, je veux payer ma licence TSDim par '+m.nom+'.')+'" target="_blank" rel="noopener" style="'+bw+';background:#25D366">💬 Demander le numéro '+m.nom+'</a>';
     return;
   }
