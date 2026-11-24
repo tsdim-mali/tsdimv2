@@ -1290,23 +1290,36 @@ function calculCableSimple() {
   let courant = parseFloat(prompt("⚡ Courant (A) :"));
   let tension = parseFloat(prompt("⚡ Tension (V) :"));
   let longueur = parseFloat(prompt("📏 Longueur (m) :"));
-  let type = prompt("🧪 Conducteur (cuivre / aluminium / or)", "cuivre");
+  let type = (prompt("🧪 Conducteur (cuivre / aluminium / or)", "cuivre") || "cuivre")
+    .trim()
+    .toLowerCase();
+  let mode = (prompt("☀️ Usage (solaire / standard)", "solaire") || "solaire")
+    .trim()
+    .toLowerCase();
 
-  if (!courant || !tension || !longueur) {
+  if (isNaN(courant) || isNaN(tension) || isNaN(longueur) || courant <= 0 || tension <= 0 || longueur <= 0) {
     alert("Données invalides !");
     return;
   }
 
-  let conductivite = 56;
-  if (type.toLowerCase() === "cuivre") conductivite = 56;
-  else if (type.toLowerCase() === "aluminium") conductivite = 35;
-  else if (type.toLowerCase() === "or") conductivite = 45;
-  else {
-    alert("Type inconnu → cuivre utilisé");
-    conductivite = 56;
+  // Conductivités à chaud (≈ 65-70 °C) : cuivre ~45, aluminium ~28, or ~36
+  let conductivite = 45;
+  if (type === "cuivre") {
+    conductivite = mode === "solaire" ? 45 : 46;
+  } else if (type === "aluminium") {
+    conductivite = 28;
+  } else if (type === "or") {
+    conductivite = 36;
+  } else {
+    alert("Type inconnu → cuivre (à chaud) utilisé");
+    type = "cuivre";
+    conductivite = 45;
   }
 
-  let chute = tension * 0.03;
+  // 1 % de chute max conseillé en solaire DC, 3 % en circuit standard
+  let pctChute = mode === "solaire" ? 0.01 : 0.03;
+  let chute = tension * pctChute;
+
   let section = (2 * longueur * courant) / (conductivite * chute);
 
   function sectionNormalisee(s) {
@@ -1319,15 +1332,23 @@ function calculCableSimple() {
 
   let sectionFinale = sectionNormalisee(section);
 
+  // Garde-fou pratique : minimum 4 mm² en câblage solaire DC
+  if (mode === "solaire" && sectionFinale < 4) {
+    sectionFinale = 4;
+  }
+
+  let chuteReelleV = (2 * longueur * courant) / (conductivite * sectionFinale);
+  let chuteReellePct = (chuteReelleV / tension) * 100;
+
   document.getElementById("resultat").innerHTML += `
-  <hr>
-  <h3>🔌 Calcul Câble Simple</h3>
-  ⚡ Courant : ${courant} A <br>
-  ⚡ Tension : ${tension} V <br>
-  📏 Longueur : ${longueur} m <br>
-  🧪 Conducteur : ${type} <br>
-  📐 Section calculée est : ${section.toFixed(2)} mm² <br>
-  🔥 Vous pouvez utiliser  : ${sectionFinale} mm² <br>
+    <hr>
+    <h3>⚡ Calcul Câble (${mode.toUpperCase()})</h3>
+    ⚡ Courant : ${courant} A <br>
+    ⚡ Tension : ${tension} V <br>
+    📏 Longueur : ${longueur} m <br>
+    🧪 Conducteur : ${type} (σ ≈ ${conductivite}) <br>
+    📐 Section calculée : ${section.toFixed(2)} mm² <br>
+    🔥 Section recommandée : <b>${sectionFinale} mm²</b> (chute réelle ≈ ${chuteReellePct.toFixed(2)} % / ${chuteReelleV.toFixed(2)} V) <br>
   `;
 }
 
