@@ -793,100 +793,7 @@ const URL_PAIEMENT = "";
 //       (ou "m" = duree en MINUTES, ou "e":"AAAA-MM-JJ" pour une date fixe)
 // Pour couper un acces : supprimez sa ligne.
 // Pour changer la duree d'un acces : modifiez son "j".
-const COMPTES = [
-  // ---- SUPER ADMIN (vous) ----
-  {"u":"admin","h":"itTgtaV27TeagGFo2YSVo31gVP51IZJRoqns4lxhLZQ","r":"admin","e":"2036-12-31"},
-  // ---- SUPER ADMIN (ne jamais supprimer) ----
-  {"u":"superadmin","h":"tpciyanRqtiKkDWpBJUzLvGt1ar_n8pk_2hXjVEblk0","e":"2099-12-31","r":"super"},
-  // ---- 15 JOURS (15 jours) ----
-  {"u":"j15-01","h":"pUwGe2L2Ewl4euV2u9XSI2pNoXCH3p6QrmQmmnlK9uU","j":15},
-  {"u":"j15-02","h":"GXvdk_5eQhBUQMoFaiIkciNwtjyrHk4T-jail6pR9ZI","j":15},
-  {"u":"j15-03","h":"QPCDLWRQEclxa0UZ62gCmAfTvNQ1rwypMadfXBiRdSM","j":15},
-  {"u":"j15-04","h":"eipK_EIBKqI3Flvw7eUTGKMWBVESEZ-EoB-V9-I2OFo","j":15},
-  {"u":"j15-05","h":"Zl6_HjzV6XEmEUYWVWBessavCchK_AgQWngUcZtMvGA","j":15},
-  {"u":"j15-06","h":"-LtapAKeiE_pXpHBbNnE7YtCpN-yjWG3Oz6vEcaQWiU","j":15},
-  {"u":"j15-07","h":"mxULbO0BZM-W9zhr6v3m3RhLydk1vXnsd2jRNnyplvg","j":15},
-  {"u":"j15-08","h":"hYcL5fUkNCz7ovUAIa52-5c9UzJBz8GupOEJQ-DYSjw","j":15},
-  {"u":"j15-09","h":"YdvKw2AwPP1ZSrb1aFLWzGIBExSgPSLlW9kSpgsF3p8","j":15},
-  {"u":"j15-10","h":"NkewlOcOnE_SXp9lHk1oo7vbGsCTpxYzSmwZrv3rZnY","j":15},
-  // ---- 1 MOIS (30 jours) ----
-  {"u":"m1-01","h":"rGbBZoUr1XjyoHLLqqvS1Sr9kKzdZaixHD2AJvfWo6s","j":30},
-  {"u":"m1-02","h":"LZLqQO5RbyvGieRp_PbU8AXLYfSfWPvLbVROrvIdM94","j":30},
-  {"u":"m1-03","h":"pD57mMyofULEZQfMfyxtE_r6pGydZlg99w0uS-YC5rA","j":30},
-  {"u":"m1-04","h":"PURVngQmtc7xKTWap22h0B-Bxr6fSn4bhfKMkwcg95Y","j":30},
-  {"u":"m1-05","h":"DTADP9qH7Sh9zpEA8XxBrK_wS6NaDfoppOYid4OJzuw","j":30},
-  {"u":"m1-06","h":"32UHWoVlHKGJa6CnkiJsNspHt1gIW1O8oxm6atugvUY","j":30},
-  {"u":"m1-07","h":"ENT41bpsOjmeBVow3fknk4kiXe-dc7kJckpMANS9Lqk","j":30},
-  {"u":"m1-08","h":"4eW510W1_pfvD4FfCLEsdMp3PRQk8-RHiajiEjqaQKE","j":30},
-  {"u":"m1-09","h":"3y7FZaikIaN1yWhFPEtibkg9afS5ieXSJO0RGoviX6E","j":30},
-  {"u":"m1-10","h":"rBvQ26lAgUGrEmDktxLrClxFuBy9XTXdbZnoJNVy9rg","j":30},
-  {"u":"m1-11","h":"iWPfzh6AqpXDaP7Vj3bW79ddYvVfta0Uu7sWKNXNwns","j":30},
-  {"u":"m1-12","h":"kblZbCrYimkdza1MgPp8MyGG-O-mD6aGXCpqNrQfmY8","j":30},
-  {"u":"m1-13","h":"Rs6as86WV4UPameADH0tMrrxwNUgYDvtXwEDhIj6reo","j":30},
-  {"u":"m1-14","h":"deaFvOBuu5f_7JQwNgr5o-0xyJmWeaMNniXirFoctK4","j":30},
-  {"u":"m1-15","h":"o97jW6JtP1g64mxYHGn0zbva6L-yqPz_Ta-3eoS1cW4","j":30},
-  {"u":"m1-16","h":"xHAainY5OmP9uicWZ7S5Nn-_cCHP54OWz1sVz2nICf0","j":30},
-  {"u":"m1-17","h":"5ZuHUNVCdzK1ls1QpSmZ28yWhoUhkh-VwIVmkqoWu3k","j":30},
-  {"u":"m1-18","h":"qmhQ5kPm53GkuvrGYm0uiGv00yuVn-tpmQ7eqqiQx4k","j":30},
-  {"u":"m1-19","h":"gYGq-FNbDFf9LQWxuUqYFDexT1f2XyD09hWajkdtxEM","j":30},
-  {"u":"m1-20","h":"PzsCg41I1z7lxbsTdbgJlXD9Fwn-Uf6Y6XDFfkKF0AQ","j":30},
-  // ---- 2 MOIS (60 jours) ----
-  {"u":"m2-01","h":"u-D2DiTtnz7GLSDaCWkkhx9I23Exxvk7kS4FT94rq24","j":60},
-  {"u":"m2-02","h":"md3VSzg_dSF_x_Ik81RxkhBZxkitldiXa08Gi6g853w","j":60},
-  {"u":"m2-03","h":"Gx_JA2IgDcYWpZOkC-90uuunhYzVyrhZrJz79Npy32Q","j":60},
-  {"u":"m2-04","h":"qzX_ngHlNlDowbbw7-0O9YdUbT4GDrrdHNupg1IpGKQ","j":60},
-  {"u":"m2-05","h":"yNQ9HG5nWYFWJY5ssH5_PM5gsR0XhFI_BPyQc9P1jmk","j":60},
-  {"u":"m2-06","h":"e3L75tZeQ3h2kHgdbKhryRGWTJGAiKsJwbijQO--8Wo","j":60},
-  {"u":"m2-07","h":"Ui0q5vmsrcALejM-2iZXRAJcQFE07683o780Z0Yl6h0","j":60},
-  {"u":"m2-08","h":"KW3o-pqXQVQgvwpETy6HaXn21fPxo3stx245dHYEn_o","j":60},
-  {"u":"m2-09","h":"anHpYAZlSjMN9EUdnox9_-iqt0TYcwY6_Ii1TTj9AaU","j":60},
-  {"u":"m2-10","h":"l8mg0ysIH1yJTu71w-RtJ2z2Sj9MhogYP-iwNW1PfNo","j":60},
-  // ---- 3 MOIS (90 jours) ----
-  {"u":"m3-01","h":"ojjVKhHvmvNrt5wwFbis_xguz5ILP9wWPYANvnoKGU8","j":90},
-  {"u":"m3-02","h":"QEC_C6DW6GKBqzRi-ohNAopTiSJ5inVGnJI2rSxBIWw","j":90},
-  {"u":"m3-03","h":"LGjwhWiWfIFW2YnwqksC0Q5ejpqAJ2KQvuPQWe2eybM","j":90},
-  {"u":"m3-04","h":"YxOD4L3pDhLguBUoYnKAZmxIVFI1sscWBO94K8g1EkI","j":90},
-  {"u":"m3-05","h":"pKEz9l6HuOYqPAwt8Af9qev8-_2khCEMRL1rVsWQv4E","j":90},
-  {"u":"m3-06","h":"cLOw3vclkZg9ibQSwxmc6KmlGzG1DjL4y_-v9ACqo4k","j":90},
-  {"u":"m3-07","h":"kabJFoabOauc5eS5KzZ-6_8ZNu2rBQ5Qi63ERMV33lc","j":90},
-  {"u":"m3-08","h":"Jzgqru3hSNUMJKbrEuBzJEOsrom_EevWny5rd9uJ938","j":90},
-  {"u":"m3-09","h":"exNkdxKSqMMHw6_mNJXYh8eOJSVMI7rODeOqUcsF4z8","j":90},
-  {"u":"m3-10","h":"bfT0hrMVeFutUXx-OV74GQCnoJGjs6yMCBeKOWI0SNQ","j":90},
-  // ---- 6 MOIS (180 jours) ----
-  {"u":"m6-01","h":"2xp7L-3mslzFqg7J3V5NogXMQSG5-5LisQIHTqYjdnE","j":180},
-  {"u":"m6-02","h":"q8nx54kaG2M8PLGrFSgwrvoioxnwT1Q7hdiBSC8ihpo","j":180},
-  {"u":"m6-03","h":"7ibSrgZa_H0AQPLcsJzy7RutJ-zMwwyLewaDeYPSmlM","j":180},
-  {"u":"m6-04","h":"EPd95iMQECkGoyIdpgXVJwt-bCaiNisXX7ujRksVsm0","j":180},
-  {"u":"m6-05","h":"yENeudufiBP-WJa3o1TKwd7_JRQWZRJSqAnEhkdcu98","j":180},
-  // ---- 1 AN (365 jours) ----
-  {"u":"an-01","h":"JjeLITW9QT4fjoIW-u9-e3xTrszDmVARJ1KzHOAEHxE","j":365},
-  {"u":"an-02","h":"Hu1xEYrag3CyIK6BOyecWj3yBWEewM2-mCgO1NPjNHw","j":365},
-  {"u":"an-03","h":"TGnJPyYK4_l8OCgTwxxlA_KO50kH2HnNG6P-MDVA7kU","j":365},
-  {"u":"an-04","h":"zegmZ5UJNN2v5ZDQ8DIK9MpaBPzMmgxVWgu1EFrl-uE","j":365},
-  {"u":"an-05","h":"xhSc5_Xb2kPyHPjY_y8TziGtTyExp9RmOL12deQos6I","j":365},
-  // ---- ESSAI 10 MIN (10 minutes a partir de la 1ere connexion) ----
-  {"u":"e10-01","h":"FRgGRm-BWHj_VwLwsALNTlFwtmIXdngaOkLDTFussso","m":10},
-  {"u":"e10-02","h":"ADsCt3OIni6O13ZyBUrkl-B5zpubdvc1H9t_mN6DyRI","m":10},
-  {"u":"e10-03","h":"-IHEB1f78Zw9QydVaglQv3zcJxqpEHBif1tAiJyYJWM","m":10},
-  {"u":"e10-04","h":"vRvvohQi8SznFmlfMAaXNUXghxI_NU4ke6kfVP1NEEU","m":10},
-  {"u":"e10-05","h":"cJZXBWhu_DA4H3dIqgIA7uTK9OkJUeY8Iyc1bgWGZhU","m":10},
-  {"u":"e10-06","h":"ZlkGMStUCIXiNvlvZoEhScWl7du0XATJM84Ov_TWyC8","m":10},
-  {"u":"e10-07","h":"zp7Q7FWpyd2Ysu20lUEG2x50abKKrDRSylApD0dKD9U","m":10},
-  {"u":"e10-08","h":"GrDGPPyYcxn4t3tD5lY9lrvl5ShTG6RMg9EiLGGqkQQ","m":10},
-  {"u":"e10-09","h":"xzJdpqKP7PAyKI1OFz9qT2gBTcWayweRE4cRb-G1Ntw","m":10},
-  {"u":"e10-10","h":"xpRa1eYKafe5-WjO4KDEBR0jxnVVVxPrOp83llXfLx0","m":10},
-  // ---- ESSAI 30 MIN (30 minutes a partir de la 1ere connexion) ----
-  {"u":"e30-01","h":"mmbV2z2OgB4-E7ErdP5I9XZPtzdZAQzzVNeTD0LVldE","m":30},
-  {"u":"e30-02","h":"nrOzanQ74PbAX_3zXe-xtg66e61Ti1YWprhpaDcrj_g","m":30},
-  {"u":"e30-03","h":"se1YZ0yHMNXTjQOLt-HFBlKjGGzHpf7VCCKIIDo30Yk","m":30},
-  {"u":"e30-04","h":"Ls7wVtgMmqq0ZoidHFGGH-cNEPnvF65EkuoDJZRfq6c","m":30},
-  {"u":"e30-05","h":"jossCUBKHmxy9oF8HlgrYfgIi4oIqtaqX5F67m8R_jg","m":30},
-  {"u":"e30-06","h":"UZVLn25NV3jAZ0jH3Xv8cnjkQ3ox0uBw8TuUP5xmyL0","m":30},
-  {"u":"e30-07","h":"HIj-l-yVKyBf1XYZImkG98kqMZOa6wBin4Ur5kL4jqg","m":30},
-  {"u":"e30-08","h":"YoZlUIiCaLgI_-8fUx6Qo1ide0KXqkLe9qMsO1RLal0","m":30},
-  {"u":"e30-09","h":"08LGUmPiEroUooC_oVigZFHFdQgO92xgFW3kIkTWfjA","m":30},
-  {"u":"e30-10","h":"OeGaWa4A8CKcjdn0SEsf0S4pp2JbKuIQtI9dHXw4wuo","m":30},
-];
+const COMPTES = [];
 
 // Utilise seulement si la liste COMPTES est vide
 const JOUR_EXPIRATION = "2026-10-31";
@@ -1808,21 +1715,21 @@ function hashCompte(u,p){
     .then(function(b){var a=new Uint8Array(b),s='';a.forEach(function(x){s+=String.fromCharCode(x)});return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')});
 }
 function trouverCompte(u,h){for(var i=0;i<COMPTES.length;i++){if(COMPTES[i].u===u&&COMPTES[i].h===h)return COMPTES[i]}return null}
-function verifierConnexion(u,p,silencieux){
+function verifierConnexion(u,p,silencieux,tk){
   var fin=function(exp){
     if(new Date(exp+'T23:59:59')<new Date(maintenant()))return {ok:false,msg:'Licence expirée. Payez pour renouveler.'};
     return {ok:true,exp:exp};
   };
   if(typeof URL_COMPTES==='string'&&URL_COMPTES){
-    return fetch(URL_COMPTES+(URL_COMPTES.indexOf('?')<0?'?':'&')+'u='+encodeURIComponent(u)+'&p='+encodeURIComponent(p)+'&a='+encodeURIComponent(idAppareil())+(silencieux?'&s=1':''))
+    return fetch(URL_COMPTES+(URL_COMPTES.indexOf('?')<0?'?':'&')+'u='+encodeURIComponent(u)+(tk?'&tk='+encodeURIComponent(tk):'&p='+encodeURIComponent(p))+'&a='+encodeURIComponent(idAppareil())+(silencieux?'&s=1':''))
       .then(function(r){return r.json()})
       .then(function(d){
-        if(d.ok){store.setItem('tsdim_exp',d.expiration);var rr=fin(d.expiration);rr.role=d.role||'client';return rr}
-        return {ok:false,msg:d.msg||'Accès refusé.'};
+        if(d.ok){store.setItem('tsdim_exp',d.expiration);var rr=fin(d.expiration);rr.role=d.role||'client';rr.jeton=d.jeton||'';return rr}
+        return {ok:false,msg:d.msg||'Accès refusé.',relogin:!!d.relogin};
       })
       .catch(function(){
         var exp=store.getItem('tsdim_exp'),s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
-        if(exp&&s&&s.u===u&&s.p===p){var r=fin(exp);if(r.ok)r.hors=true;return r}
+        if(exp&&s&&s.u===u&&((tk&&s.tk===tk)||(!tk&&s.p===p))){var r=fin(exp);if(r.ok)r.hors=true;return r}
         return {ok:false,msg:'Connexion internet nécessaire pour se connecter.'};
       });
   }
@@ -1862,9 +1769,9 @@ function limiteEssai(creer){
 }
 function connexionAuto(cb){
   var s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
-  if(!s||!s.u||!s.p){var Lt=limiteEssai(false);if(Lt&&Lt>new Date(maintenant())){DATE_LIMITE=Lt;ROLE='client';majAdmin();return cb(true)}return afficherConnexion(cb)}
-  verifierConnexion(s.u,s.p).then(function(r){
-    if(r.ok){DATE_LIMITE=limiteDe(r);ROLE=r.role||'client';majAdmin();if(r.hors)alert('📴 Hors ligne : dernière licence connue utilisée.');cb(true)}
+  if(!s||!s.u||!(s.tk||s.p)){var Lt=limiteEssai(false);if(Lt&&Lt>new Date(maintenant())){DATE_LIMITE=Lt;ROLE='client';majAdmin();return cb(true)}return afficherConnexion(cb)}
+  verifierConnexion(s.u,s.p,false,s.tk).then(function(r){
+    if(r.ok){if(!s.tk&&r.jeton)store.setItem('tsdim_compte',JSON.stringify({u:s.u,tk:r.jeton}));DATE_LIMITE=limiteDe(r);ROLE=r.role||'client';majAdmin();if(r.hors)alert('📴 Hors ligne : dernière licence connue utilisée.');cb(true)}
     else{store.removeItem('tsdim_compte');if(r.msg)alert('❌ '+r.msg);afficherConnexion(cb)}
   });
 }
@@ -1907,7 +1814,7 @@ function afficherConnexion(cb){
     verifierConnexion(u,p).then(function(r){
       ok.disabled=false;ok.textContent='Connexion';
       if(!r.ok)return alert('❌ '+r.msg);
-      store.setItem('tsdim_compte',JSON.stringify({u:u,p:p}));
+      store.setItem('tsdim_compte',JSON.stringify(r.jeton?{u:u,tk:r.jeton}:{u:u,p:p}));
       DATE_LIMITE=limiteDe(r);ROLE=r.role||'client';majAdmin();ov.remove();cb(true);
     }).catch(function(){ok.disabled=false;ok.textContent='Connexion';alert('⚠️ Vérification impossible sur ce navigateur.')});
   };
@@ -1999,8 +1906,8 @@ setInterval(function(){
   try{
     if(typeof URL_COMPTES!=='undefined'&&modeCompte()){
       var s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
-      if(!s||!s.u||!s.p){var Lp2=window.limitePaiement&&window.limitePaiement();var Le=Lp2||limiteEssai(false);if(Le&&DATE_LIMITE)DATE_LIMITE=Le;return}if(!DATE_LIMITE)return;
-      verifierConnexion(s.u,s.p,true).then(function(r){
+      if(!s||!s.u||!(s.tk||s.p)){var Lp2=window.limitePaiement&&window.limitePaiement();var Le=Lp2||limiteEssai(false);if(Le&&DATE_LIMITE)DATE_LIMITE=Le;return}if(!DATE_LIMITE)return;
+      verifierConnexion(s.u,s.p,true,s.tk).then(function(r){
         if(r.ok){DATE_LIMITE=limiteDe(r);ROLE=r.role||'client';majAdmin()}
         else if(!r.hors)DATE_LIMITE=new Date(0);
       }).catch(function(){});
@@ -2150,7 +2057,7 @@ function ouvrirAdmin(){
   if(SRV){
     ov.querySelectorAll('.admLocal').forEach(function(e){e.style.display='none'});
     var sess=function(){try{return JSON.parse(store.getItem('tsdim_compte'))}catch(e){return null}};
-    var appel=function(par){var c=sess();if(!c)return Promise.reject();par.u=c.u;par.p=c.p;par.s=1;
+    var appel=function(par){var c=sess();if(!c)return Promise.reject();par.u=c.u;if(c.tk)par.tk=c.tk;else par.p=c.p;par.s=1;
       return fetch(URL_COMPTES+'?'+Object.keys(par).map(function(k){return k+'='+encodeURIComponent(par[k])}).join('&')).then(function(r){return r.json()})};
     var charger=function(){
       q('admLiveOut').innerHTML='Chargement...';
@@ -2159,7 +2066,7 @@ function ouvrirAdmin(){
         var on=d.liste.filter(function(x){return x.act&&Date.now()-x.act<90000}).length;
         q('admLiveOut').innerHTML='<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
           +d.liste.map(function(x){var b=String(x.statut).toLowerCase()==='bloque';
-            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
+            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
       }).catch(function(){q('admLiveOut').textContent='Connexion impossible'});
     };
     q('admLive').onclick=charger;charger();
@@ -2178,6 +2085,19 @@ function ouvrirAdmin(){
           if(!(j>=1&&j<=3650))return alert('⚠️ Nombre de jours invalide (1 à 3650).');
           envoyer({action:'prolonger',t:u,j:j},'✅ +'+j+' jour(s) ajouté(s) à '+u);
         });
+      }
+      if(a==='mdp'){
+        return formModal('🔑 Nouveau mot de passe pour '+u,[
+          {label:'Nouveau mot de passe (8 caractères minimum)',ph:'ex: Solaire2026',value:''}
+        ],function(v){
+          var m=v[0];
+          if(m.length<8)return alert('⚠️ Mot de passe : 8 caractères minimum.');
+          appel({action:'mdp',t:u,m:m}).then(function(d){
+            if(!d.ok)return alert('❌ '+(d.msg||'Erreur'));
+            copierTexte('Votre accès TSDim\nIdentifiant : '+u+'\nNouveau mot de passe : '+m);
+            alert('✅ Mot de passe changé. Message copié, collez-le dans WhatsApp.');
+          }).catch(function(){alert('Connexion impossible')});
+        },'Le client devra se reconnecter avec ce nouveau mot de passe.');
       }
       if(a==='supprimer'){
         var me=sess();if(me&&me.u===u)return alert('⛔ Vous ne pouvez pas supprimer votre propre compte.');
@@ -2435,28 +2355,40 @@ window.ouvrirFormation=function(){
     box.querySelector('#qFerme').onclick=fermer;
   }
   function jouer(liste,cle){
-    var n=0,score=0;
+    var n=0,score=0,rep=[],ord=[];
     function question(){
-      var q=liste[n],bonne=q[1][0],opts=mel(q[1]);
-      var h='<div style="font-size:.8rem;color:#64748b">Question '+(n+1)+' / '+liste.length+' · Score : '+score+'</div>'
+      var q=liste[n],bonne=q[1][0];
+      if(!ord[n])ord[n]=mel(q[1]);
+      var opts=ord[n];
+      var h='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button class="btn-action warning" id="qMenuHaut" style="flex:none;width:auto;padding:6px 10px;font-size:.8rem">⬅️ Menu</button><span style="font-size:.8rem;color:#64748b">Question '+(n+1)+' / '+liste.length+' · Score : '+score+'</span></div>'
        +'<h3 style="margin:10px 0">'+q[0]+'</h3>';
       opts.forEach(function(o,i){h+='<button class="btn-action" data-o="'+i+'" style="width:100%;margin:5px 0;text-align:left;background:#f1f5f9;color:#0f172a;border:1px solid #cbd5e1">'+o+'</button>'});
       h+='<div id="qRep"></div>';
+      if(n>0)h+='<button class="btn-action" id="qPrec" style="width:100%;margin-top:10px;background:#e2e8f0;color:#0f172a">◀ Question précédente</button>';
       box.innerHTML=h;
+      box.querySelector('#qMenuHaut').onclick=accueil;
+      var prec=box.querySelector('#qPrec');if(prec)prec.onclick=function(){n--;question()};
       var fini=false;
-      box.querySelectorAll('[data-o]').forEach(function(b){b.onclick=function(){
-        if(fini)return;fini=true;
-        var ok=opts[+b.getAttribute('data-o')]===bonne;if(ok)score++;
+      function montrer(choix){
+        fini=true;
+        var ok=choix===bonne;
         box.querySelectorAll('[data-o]').forEach(function(x){
           var t=opts[+x.getAttribute('data-o')];
           if(t===bonne){x.style.background='#16a34a';x.style.color='#fff';x.style.borderColor='#16a34a'}
-          else if(x===b){x.style.background='#dc2626';x.style.color='#fff';x.style.borderColor='#dc2626'}
+          else if(t===choix){x.style.background='#dc2626';x.style.color='#fff';x.style.borderColor='#dc2626'}
         });
         var r=box.querySelector('#qRep');
         r.innerHTML='<p style="margin:10px 0"><b>'+(ok?'✅ Bonne réponse !':'❌ Mauvaise réponse.')+'</b><br>'+q[2]+'</p>'
           +'<button class="btn-action primary" id="qSuiv" style="width:100%">'+(n+1<liste.length?'Question suivante ➜':'Voir mon résultat')+'</button>';
-        r.querySelector('#qSuiv').onclick=function(){n++;if(n<liste.length)question();else fin()};
+        r.querySelector('#qSuiv').onclick=function(){if(n+1<liste.length){n++;question()}else fin()};
+      }
+      box.querySelectorAll('[data-o]').forEach(function(b){b.onclick=function(){
+        if(fini)return;
+        var choix=opts[+b.getAttribute('data-o')];
+        rep[n]=choix;if(choix===bonne)score++;
+        montrer(choix);
       }});
+      if(rep[n]!==undefined)montrer(rep[n]);
     }
     function fin(){
       var p=Math.round(score*100/liste.length);
