@@ -2159,16 +2159,33 @@ function ouvrirAdmin(){
         var on=d.liste.filter(function(x){return x.act&&Date.now()-x.act<90000}).length;
         q('admLiveOut').innerHTML='<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
           +d.liste.map(function(x){var b=String(x.statut).toLowerCase()==='bloque';
-            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button>':'')+'</td></tr>'}).join('')+'</table>';
+            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
       }).catch(function(){q('admLiveOut').textContent='Connexion impossible'});
     };
     q('admLive').onclick=charger;charger();
     var tm=setInterval(function(){if(!document.body.contains(ov)){clearInterval(tm);return}charger()},15000);
     ov.addEventListener('click',function(e){
       var t=e.target;if(!t.dataset||!t.dataset.a)return;
-      var par=t.dataset.a==='plus30'?{action:'prolonger',t:t.dataset.t,j:30}:t.dataset.a==='liberer'?{action:'liberer',t:t.dataset.t}:{action:'maj',t:t.dataset.t,k:'statut',v:t.dataset.a==='bloque'?'bloque':''};
-      if(t.dataset.a==='bloque'&&!confirm('Bloquer '+t.dataset.t+' ?'))return;if(t.dataset.a==='liberer'&&!confirm('Libérer '+t.dataset.t+' ? Le client pourra se connecter depuis un nouvel appareil.'))return;
-      appel(par).then(function(d){alert(d.ok?'✅ Fait':'❌ '+(d.msg||'Erreur'));charger()});
+      var u=t.dataset.t,a=t.dataset.a;
+      var envoyer=function(par,okMsg){appel(par).then(function(d){alert(d.ok?(okMsg||'✅ Fait'):'❌ '+(d.msg||'Erreur'));charger()}).catch(function(){alert('Connexion impossible')})};
+      if(a==='plus')return envoyer({action:'prolonger',t:u,j:parseInt(t.dataset.j,10)},'✅ +'+t.dataset.j+' jours ajoutés à '+u);
+      if(a==='plusX'){
+        return formModal('⏱️ Ajouter du temps à '+u,[
+          {label:'Durée à ajouter',options:['1 jour','3 jours','7 jours','15 jours','30 jours','60 jours','90 jours','180 jours','365 jours','Autre (saisir ci-dessous)'],value:'7 jours'},
+          {label:'Autre : nombre de jours (seulement si « Autre »)',type:'number',min:0,value:1,opt:true}
+        ],function(v){
+          var j=v[0].indexOf('Autre')===0?Math.round(v[1]):parseInt(v[0],10);
+          if(!(j>=1&&j<=3650))return alert('⚠️ Nombre de jours invalide (1 à 3650).');
+          envoyer({action:'prolonger',t:u,j:j},'✅ +'+j+' jour(s) ajouté(s) à '+u);
+        });
+      }
+      if(a==='supprimer'){
+        var me=sess();if(me&&me.u===u)return alert('⛔ Vous ne pouvez pas supprimer votre propre compte.');
+        return formModal('🗑️ Supprimer '+u,[],function(){envoyer({action:'supprimer',t:u},'✅ Compte '+u+' supprimé')},'Supprimer définitivement le compte <b>'+u+'</b> ? Cette action est irréversible.');
+      }
+      if(a==='liberer')return formModal('📱 Libérer '+u,[],function(){envoyer({action:'liberer',t:u})},'Le client pourra se connecter depuis un nouvel appareil.');
+      if(a==='bloque')return formModal('⛔ Bloquer '+u,[],function(){envoyer({action:'maj',t:u,k:'statut',v:'bloque'})},'Bloquer le compte <b>'+u+'</b> ?');
+      envoyer({action:'maj',t:u,k:'statut',v:''});
     });
     ov.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.t&&!t.dataset.a&&t.tagName==='INPUT')appel({action:'maj',t:t.dataset.t,k:'client',v:t.value}).then(function(d){if(!d.ok)alert('❌ '+(d.msg||'Erreur'))})});
     var go0=q('admGo').onclick;
@@ -2564,7 +2581,7 @@ window.afficherPaiement=function(op){
     +'<li>Envoyez-nous le <b>reçu</b> : nous activons votre accès.</li></ol>';
   var bw='display:block;margin-top:8px;padding:10px;border-radius:8px;text-decoration:none;font-size:.9rem;font-weight:700;color:#fff;text-align:center;border:0;width:100%;cursor:pointer';
   z.style.display='block';
-   if(!m.num){
+  if(!m.num){
     z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 6px">🔷 '+m.nom+' - '+MONTANT+' FCFA</p>'
       +'<p style="font-size:.85rem;color:#334155">Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
       +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/" class="btn-wave" target="_blank" rel="noopener noreferrer">Cliquer pour Payer</a>'
