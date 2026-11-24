@@ -2564,12 +2564,10 @@ window.afficherPaiement=function(op){
     +'<li>Envoyez-nous le <b>reçu</b> : nous activons votre accès.</li></ol>';
   var bw='display:block;margin-top:8px;padding:10px;border-radius:8px;text-decoration:none;font-size:.9rem;font-weight:700;color:#fff;text-align:center;border:0;width:100%;cursor:pointer';
   z.style.display='block';
-  if(!m.num){
+   if(!m.num){
     z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 6px">🔷 '+m.nom+' - '+MONTANT+' FCFA</p>'
       +'<p style="font-size:.85rem;color:#334155">Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
-      +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/" class="btn-wave" target="_blank" rel="noopener noreferrer">
-  Cliquer pour Payer
-</a>'
+      +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/" class="btn-wave" target="_blank" rel="noopener noreferrer">Cliquer pour Payer</a>'
       +'<a href="https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour, je veux payer ma licence TSDim par '+m.nom+'.')+'" target="_blank" rel="noopener" style="'+bw+';background:#25D366">💬 Demander le numéro '+m.nom+'</a>';
     return;
   }
