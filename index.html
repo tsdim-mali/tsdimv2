@@ -665,7 +665,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
         </div>
         <div class="input-group">
           <label>👤 Nom du client</label>
-          <input type="text" id="client" placeholder="Ex: Jean Dupont">
+          <input type="text" id="client" placeholder="Ex: Jean Dupont" list="listeClients" autocomplete="off"><datalist id="listeClients"></datalist>
         </div>
       </div>
       
@@ -701,7 +701,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
   <div style="background:white; padding:20px; border-radius:12px; width:100%; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;">
     
     <h2 style="color:#e11d48; margin-top:0; font-size: 1.3rem;">⛔ Licence Expirée</h2>
-    <h3 style="color:#09a8e7; margin-top:0; font-size: 2 rem;">2.000 FCFA</h3>
+    <h3 id="prixOffre" style="color:#09a8e7; margin-top:0; font-size: 2 rem;">2.000 FCFA</h3>
     <p style="color:#334155; font-size:0.85rem; margin-bottom: 15px;">
       Votre période d'abonnement est arrivée à expiration. Choisissez votre mode de paiement :
     </p>
@@ -1628,7 +1628,10 @@ function genererFacture(valPan,valBat,prix){
   // En-tête
   doc.setFillColor(10,77,148);doc.rect(0,0,W,34,'F');
   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(15);
-  var E=infoEnt(),LG=null,X=20;
+  var E=infoEnt(),LG=lireLogo(),X=20;
+  if(LG){try{doc.setFillColor(255,255,255);doc.roundedRect(8,4,26,26,2,2,'F');
+    var ip=doc.getImageProperties(LG),k=Math.min(22/ip.width,22/ip.height),iw=ip.width*k,ih=ip.height*k;
+    doc.addImage(LG,'JPEG',8+(26-iw)/2,4+(26-ih)/2,iw,ih);X=40}catch(e){LG=null;X=20}}
   doc.text(doc.splitTextToSize(E.nom,LG?100:110)[0],X,14);
   doc.setFont('helvetica','normal');doc.setFontSize(8.5);
   var yy=21,det=[E.adr,[E.tel&&('Tel : '+E.tel),E.email].filter(Boolean).join('  |  '),[E.nif&&('N° : '+E.nif),E.web].filter(Boolean).join('  |  ')];
@@ -1637,7 +1640,7 @@ function genererFacture(valPan,valBat,prix){
   doc.setFillColor(245,130,32);doc.rect(0,34,W,2,'F');
   // Infos
   doc.setTextColor(30,41,59);doc.setFontSize(10);
-  doc.setFont('helvetica','bold');doc.text('Facturé à :',20,48);doc.setFont('helvetica','normal');doc.text(client,20,54);
+  doc.setFont('helvetica','bold');doc.text('Facturé à :',20,48);doc.setFont('helvetica','normal');doc.text(client,20,54);var fc=window.trouverFicheClient&&window.trouverFicheClient(client);if(fc&&fc.t){doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Tél : '+fc.t,20,59);doc.setFontSize(10)}
   doc.setFont('helvetica','bold');doc.text('Facture N° :',130,48);doc.text('Date :',130,54);
   doc.setFont('helvetica','normal');doc.text(numero,190,48,{align:'right'});doc.text(dateStr,190,54,{align:'right'});
   var g=function(id){return document.getElementById(id)},sel=function(id){var e=g(id);return e.options[e.selectedIndex].text};
@@ -1859,7 +1862,7 @@ function afficherConnexion(cb){
     +'<button class="btn-action primary" id="fmTrial" style="width:100%;margin-top:12px;background:linear-gradient(135deg,#16a34a,#22c55e)">🎁 Essai gratuit ('+ESSAI_JOURS+' jours)</button>'
     +'<hr style="margin:18px 0;border:0;border-top:1px solid #e2e8f0">'
     +'<p style="font-size:.9rem;margin:0 0 8px"><b>Pas encore d\'accès ?</b> Payez d\'abord, puis envoyez-nous le reçu : vous recevrez votre identifiant et votre mot de passe.</p>'
-    +'<button class="btn-action primary" id="fmPay" style="width:100%;background:#f58220">💳 Payer ma licence (2000 FCFA)</button>'
+    +'<button class="btn-action primary" id="fmPay" style="width:100%;background:#f58220">💳 Payer ma licence</button>'
     +'<a class="btn-action primary" style="text-align:center;text-decoration:none;display:block;margin-top:8px;background:#25D366" href="'+wa+'" target="_blank" rel="noopener">Envoyer le reçu sur WhatsApp</a>'
     +'<p style="font-size:.75rem;color:#64748b;margin:12px 0 0;text-align:center">Identifiant de cet appareil : '+idAppareil()+'</p></div>';
   document.body.appendChild(ov);
@@ -1889,6 +1892,9 @@ function afficherConnexion(cb){
 
 (function(){var e=document.getElementById('entreprise');if(!e)return;try{e.value=store.getItem('tsdim_entreprise')||''}catch(x){}e.addEventListener('input',function(){try{store.setItem('tsdim_entreprise',e.value)}catch(x){}})})();
 
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return window['_m_'+k]||null}}
+function lsSet(k,v){try{if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){window['_m_'+k]=v}}
+function lireLogo(){var d=lsGet('tsdim_logo');return d&&/^data:image\/(jpeg|png);base64,/.test(d)?d:null}
 function infoEnt(){
   var o={};try{o=JSON.parse(store.getItem('tsdim_ent_info'))||{}}catch(e){}
   var n=document.getElementById('entreprise');
@@ -1905,8 +1911,26 @@ function ouvrirEntreprise(){
     +f('fmNif','N° NIF / RCCM (facultatif)',E.nif)
     +f('fmWeb','Site web / réseaux sociaux (facultatif)',E.web)
     +f('fmMen','Mentions / paiement (facultatif)',E.mention,'text','Ex: Paiement Orange Money 70 00 00 00')
+    +'<label>Logo de l\'entreprise (facultatif, affiché sur la facture)</label>'
+    +'<div style="display:flex;align-items:center;gap:10px"><img id="fmLogoImg" style="width:56px;height:56px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px;background:#fff;display:none">'
+    +'<input id="fmLogoFile" type="file" accept="image/*" style="flex:1"><button type="button" id="fmLogoDel" class="btn-action warning" style="display:none;padding:6px 10px">✖</button></div>'
     +'<div class="fm-actions"><button class="btn-action warning" id="fmNo">Passer</button><button class="btn-action primary" id="fmOk">Continuer</button></div></div>';
   document.body.appendChild(ov);
+  var logoNouveau=lireLogo(),logoImg=ov.querySelector('#fmLogoImg'),logoDel=ov.querySelector('#fmLogoDel');
+  function majLogo(){logoImg.style.display=logoNouveau?'block':'none';logoDel.style.display=logoNouveau?'':'none';if(logoNouveau)logoImg.src=logoNouveau}
+  majLogo();
+  logoDel.onclick=function(){logoNouveau=null;ov.querySelector('#fmLogoFile').value='';majLogo()};
+  ov.querySelector('#fmLogoFile').onchange=function(){
+    var fi=this.files&&this.files[0];if(!fi)return;
+    var rd=new FileReader();
+    rd.onload=function(){var im=new Image();im.onload=function(){
+      var M=240,s=Math.min(1,M/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*s)),hh=Math.max(1,Math.round(im.height*s));
+      var cv=document.createElement('canvas');cv.width=w;cv.height=hh;var cx=cv.getContext('2d');
+      cx.fillStyle='#fff';cx.fillRect(0,0,w,hh);cx.drawImage(im,0,0,w,hh);
+      logoNouveau=cv.toDataURL('image/jpeg',0.85);majLogo();
+    };im.onerror=function(){alert("⚠️ Image illisible : choisissez un fichier JPG ou PNG.")};im.src=rd.result};
+    rd.readAsDataURL(fi);
+  };
   ov.querySelector('#fmNo').onclick=function(){ov.remove()};
   ov.querySelector('#fmOk').onclick=function(){
     var v=function(id){return ov.querySelector('#'+id).value.trim()},nom=v('fmNom');
@@ -1916,6 +1940,7 @@ function ouvrirEntreprise(){
     try{
       store.setItem('tsdim_entreprise',nom);
       store.setItem('tsdim_ent_info',JSON.stringify({tel:v('fmTel'),email:v('fmMail'),adr:v('fmAdr'),nif:v('fmNif'),web:v('fmWeb'),mention:v('fmMen')}));
+      lsSet('tsdim_logo',logoNouveau);
       alert('✅ Informations enregistrées');
     }catch(e){alert("⚠️ Impossible d'enregistrer sur cet appareil.")}
     ov.remove();setTimeout(proposerEnvoi,300);
@@ -2128,9 +2153,17 @@ function ouvrirAdmin(){
       appel({action:'liste'}).then(function(d){
         if(!d.ok){q('admLiveOut').textContent=d.msg||'Refusé';return}
         var on=d.liste.filter(function(x){return x.act&&Date.now()-x.act<90000}).length;
-        q('admLiveOut').innerHTML='<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
+        var aj=new Date().toISOString().slice(0,10),j7=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+        var cl=d.liste.filter(function(x){return x.role!=='admin'}),ex=cl.filter(function(x){return x.exp&&x.exp<aj}).length,
+            bt=cl.filter(function(x){return x.exp&&x.exp>=aj&&x.exp<=j7}).length,nv=cl.filter(function(x){return !x.exp}).length,
+            ac=cl.filter(function(x){return x.exp&&x.exp>=aj}).length,rv=d.revenus||{mois:0,total:0,nb:0};
+        var fm=function(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')};
+        var stats='<div style="background:#f1f5f9;border-radius:8px;padding:8px;margin:0 0 8px;font-size:.8rem;line-height:1.6;text-align:left">'
+          +'<b>📊 Statistiques</b><br>👥 '+cl.length+' clients · ✅ '+ac+' actifs · ⏳ <b>'+bt+'</b> expirent sous 7 jours · ⛔ '+ex+' expirés · 🆕 '+nv+' jamais connectés<br>'
+          +'💰 Encaissé ce mois : <b>'+fm(rv.mois)+' FCFA</b> · total : '+fm(rv.total)+' FCFA ('+rv.nb+' paiements)</div>';
+        q('admLiveOut').innerHTML=stats+'<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
           +d.liste.map(function(x){var b=String(x.statut).toLowerCase()==='bloque';
-            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="msg" style="padding:5px 7px;border:0;border-radius:6px;background:#0ea5e9;color:#fff">💬 Message</button> <button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
+            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(String(x.derniere||'-').replace(/^(\d{4})-(\d\d)-(\d\d)T(\d\d:\d\d).*$/,'$3/$2 $4'))+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="msg" style="padding:5px 7px;border:0;border-radius:6px;background:#0ea5e9;color:#fff">💬 Message</button> <button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
       }).catch(function(){q('admLiveOut').textContent='Connexion impossible'});
     };
     q('admLive').onclick=charger;charger();
@@ -2150,11 +2183,12 @@ function ouvrirAdmin(){
       if(a==='plusX'){
         return formModal('⏱️ Ajouter du temps à '+u,[
           {label:'Durée à ajouter',options:['1 jour','3 jours','7 jours','15 jours','30 jours','60 jours','90 jours','180 jours','365 jours','Autre (saisir ci-dessous)'],value:'7 jours'},
-          {label:'Autre : nombre de jours (seulement si « Autre »)',type:'number',min:0,value:1,opt:true}
+          {label:'Autre : nombre de jours (seulement si « Autre »)',type:'number',min:0,value:1,opt:true},
+          {label:'Montant encaissé en FCFA (0 si offert)',type:'number',min:0,value:2000,opt:true}
         ],function(v){
           var j=v[0].indexOf('Autre')===0?Math.round(v[1]):parseInt(v[0],10);
           if(!(j>=1&&j<=3650))return alert('⚠️ Nombre de jours invalide (1 à 3650).');
-          envoyer({action:'prolonger',t:u,j:j},'✅ +'+j+' jour(s) ajouté(s) à '+u);
+          envoyer({action:'prolonger',t:u,j:j,mt:Math.round(v[2]||0)},'✅ +'+j+' jour(s) ajouté(s) à '+u+(v[2]>0?' ('+Math.round(v[2])+' FCFA enregistrés)':''));
         });
       }
       if(a==='mdp'){
@@ -2307,6 +2341,57 @@ window.ouvrirTexteLegal=function(w){texte(w==='cgu'?"📜 Conditions d'utilisati
 var premier=document.querySelector('.btn-nav'),nav=premier&&premier.parentNode;
 function bouton(txt,fn,id){if(!nav)return;var b=document.createElement('button');b.className='btn-nav';b.textContent=txt;if(id)b.id=id;b.onclick=fn;nav.appendChild(b)}
 bouton('📚 Factures',window.ouvrirFactures);
+/* ---------- Fiches clients (enregistrées sur l'appareil, créées automatiquement à chaque facture) ---------- */
+var CLE_CL='tsdim_clients';
+function clLire(){try{var l=JSON.parse(lsGet(CLE_CL)||'[]');return Array.isArray(l)?l:[]}catch(e){return []}}
+function clEcrire(l){lsSet(CLE_CL,JSON.stringify(l.slice(0,500)));clSuggest()}
+function clSuggest(){var dl=document.getElementById('listeClients');if(!dl)return;dl.innerHTML='';clLire().forEach(function(c){var o=document.createElement('option');o.value=c.n;dl.appendChild(o)})}
+window.trouverFicheClient=function(nom){var n=String(nom||'').trim().toLowerCase();return clLire().filter(function(c){return c.n.toLowerCase()===n})[0]||null};
+var hf0=window.historiqueFacture;
+window.historiqueFacture=function(num,date,client,ttc){
+  if(hf0)hf0(num,date,client,ttc);
+  try{if(!client||client==='Client')return;var l=clLire(),n=client.trim().toLowerCase(),c=l.filter(function(x){return x.n.toLowerCase()===n})[0];
+    if(!c){c={n:client.trim(),t:'',note:'',nb:0,tot:0};l.unshift(c)}
+    c.nb=(c.nb||0)+1;c.tot=(c.tot||0)+Math.round(ttc);c.d=date;clEcrire(l)}catch(e){}
+};
+function esc2(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+window.ouvrirClients=function(){
+  var ov=texte('👥 Mes clients','<input id="clQ" type="search" placeholder="Rechercher un client..." style="width:100%;margin-bottom:8px"><button class="btn-action primary" id="clAdd" style="width:100%;margin-bottom:8px">➕ Ajouter un client</button><div id="clListe"></div>');
+  function dessiner(){
+    var q=ov.querySelector('#clQ').value.trim().toLowerCase(),l=clLire().filter(function(c){return !q||(c.n+' '+(c.t||'')).toLowerCase().indexOf(q)>=0}),z=ov.querySelector('#clListe');
+    if(!l.length){z.innerHTML='<p style="color:#64748b">Aucun client. Ils sont ajoutés automatiquement quand vous créez une facture.</p>';return}
+    z.innerHTML=l.map(function(c){var tel=String(c.t||'').replace(/[^\d]/g,'');
+      return '<div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-bottom:8px;text-align:left"><b>'+esc2(c.n)+'</b>'
+       +(c.t?'<br>📞 '+esc2(c.t):'')+'<br><span style="font-size:.8rem;color:#64748b">'+(c.nb||0)+' facture(s) · '+fcfa(c.tot||0)+(c.d?' · dernière : '+esc2(c.d):'')+'</span>'
+       +(c.note?'<br><span style="font-size:.82rem">📝 '+esc2(c.note)+'</span>':'')
+       +'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'
+       +(tel?'<a href="https://wa.me/'+tel+'" target="_blank" rel="noopener" style="padding:6px 10px;border-radius:6px;background:#25D366;color:#fff;text-decoration:none;font-size:.8rem">💬 WhatsApp</a>':'')
+       +'<button data-a="ed" data-n="'+esc2(c.n)+'" style="padding:6px 10px;border:0;border-radius:6px;background:#0ea5e9;color:#fff;font-size:.8rem">✏️ Modifier</button>'
+       +'<button data-a="fa" data-n="'+esc2(c.n)+'" style="padding:6px 10px;border:0;border-radius:6px;background:#16a34a;color:#fff;font-size:.8rem">🧾 Nouvelle facture</button>'
+       +'<button data-a="rm" data-n="'+esc2(c.n)+'" style="padding:6px 10px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-size:.8rem">🗑️</button></div></div>'}).join('');
+  }
+  function editer(nom){
+    var c=window.trouverFicheClient(nom)||{n:'',t:'',note:''};
+    formModal(nom?'✏️ Modifier le client':'➕ Nouveau client',[
+      {label:'Nom du client',value:c.n},{label:'Téléphone / WhatsApp (ex: +223 70 00 00 00)',value:c.t||'',opt:true},{label:'Notes (installation, adresse...)',value:c.note||'',opt:true}
+    ],function(v){
+      var l=clLire(),ex=nom?l.filter(function(x){return x.n.toLowerCase()===nom.toLowerCase()})[0]:null;
+      if(!ex){if(l.some(function(x){return x.n.toLowerCase()===v[0].toLowerCase()}))return alert('⚠️ Ce client existe déjà.');ex={n:v[0],nb:0,tot:0};l.unshift(ex)}
+      ex.n=v[0];ex.t=v[1];ex.note=v[2];clEcrire(l);dessiner();
+    });
+  }
+  ov.querySelector('#clQ').oninput=dessiner;
+  ov.querySelector('#clAdd').onclick=function(){editer('')};
+  ov.querySelector('#clListe').onclick=function(e){
+    var b=e.target;if(!b.dataset||!b.dataset.a)return;var n=b.dataset.n;
+    if(b.dataset.a==='ed')return editer(n);
+    if(b.dataset.a==='fa'){var i=document.getElementById('client');if(i){i.value=n;i.scrollIntoView({behavior:'smooth',block:'center'})}ov.remove();return}
+    if(b.dataset.a==='rm'&&confirm('Supprimer la fiche de '+n+' ?')){clEcrire(clLire().filter(function(x){return x.n!==n}));dessiner()}
+  };
+  dessiner();
+};
+bouton('👥 Clients',window.ouvrirClients);
+clSuggest();
 bouton("📖 Mode d'emploi",function(){window.ouvrirTexteLegal('aide')});
 /* Couleurs personnalisées : en-tête et arrière-plan */
 (function(){
@@ -2565,7 +2650,28 @@ function majRappel(){
 setInterval(majRappel,5000);setTimeout(majRappel,1500);
 
 /* ---------- 7. Paiement guidé (numéros, copier, reçu WhatsApp) ---------- */
-var MONTANT=2000;
+var OFFRES=[{j:30,m:2000,l:'1 mois'},{j:90,m:5000,l:'3 mois'},{j:365,m:15000,l:'12 mois'}];
+var MONTANT=2000,OFFRE=OFFRES[0],OP_COURANT=null;
+function fmtM(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')}
+(function(){
+  var t=document.getElementById('prixOffre');if(!t)return;
+  var bx=document.createElement('div');bx.id='offresBox';bx.style.cssText='display:flex;gap:6px;margin:4px 0 12px';
+  OFFRES.forEach(function(o,i){
+    var b=document.createElement('button');b.type='button';b.dataset.i=i;
+    var eco=o.j===30?'':'<br><span style="font-size:.68rem;font-weight:600">Économie '+fmtM(2000*(o.j===365?12:Math.round(o.j/30))-o.m)+'</span>';
+    b.innerHTML='<b>'+o.l+'</b><br>'+fmtM(o.m)+' FCFA'+eco;
+    b.style.cssText='flex:1;padding:8px 4px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:#0f172a;font-size:.8rem;cursor:pointer;line-height:1.3';
+    b.onclick=function(){choisirOffre(i)};bx.appendChild(b);
+  });
+  t.parentNode.insertBefore(bx,t.nextSibling);
+  window.choisirOffre=function(i){
+    OFFRE=OFFRES[i];MONTANT=OFFRE.m;
+    t.textContent=fmtM(OFFRE.m)+' FCFA ('+OFFRE.l+')';
+    Array.prototype.forEach.call(bx.children,function(b,k){b.style.borderColor=(k===i)?'#09a8e7':'#e2e8f0';b.style.background=(k===i)?'#e0f2fe':'#fff'});
+    if(OP_COURANT&&window.afficherPaiement)window.afficherPaiement(OP_COURANT);
+  };
+  window.choisirOffre(0);
+})();
 var PAIEMENT={
   orange:{nom:'Orange Money',coul:'#ff6600',num:'75 67 95 86'},
   moov:{nom:'Moov Africa (Malitel)',coul:'#0066cc',num:'60 38 03 24'},
@@ -2573,9 +2679,9 @@ var PAIEMENT={
 };
 window.afficherPaiement=function(op){
   var z=$('zonePaiementDetails');if(!z)return;
-  var m=PAIEMENT[op];if(!m)return;
+  var m=PAIEMENT[op];if(!m)return;OP_COURANT=op;
   var compte=null;try{compte=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
-  var msg='Bonjour, voici ma preuve de paiement de '+MONTANT+' FCFA via '+m.nom+' pour ma licence TSDim.'+(compte&&compte.u?' Mon compte : '+compte.u+'.':'')+' Mon identifiant appareil : '+(typeof idAppareil==='function'?idAppareil():'');
+  var msg='Bonjour, voici ma preuve de paiement de '+MONTANT+' FCFA via '+m.nom+' pour ma licence TSDim ('+OFFRE.l+').'+(compte&&compte.u?' Mon compte : '+compte.u+'.':'')+' Mon identifiant appareil : '+(typeof idAppareil==='function'?idAppareil():'');
   var wa='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
   var etapes='<ol style="text-align:left;font-size:.82rem;color:#334155;padding-left:20px;margin:10px 0">'
     +'<li>Ouvrez votre application <b>'+m.nom+'</b> (ou composez le code de votre opérateur).</li>'
@@ -2586,9 +2692,9 @@ window.afficherPaiement=function(op){
   z.style.display='block';
   if(!m.num){
     z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 6px">🔷 '+m.nom+' - '+MONTANT+' FCFA</p>'
-      +'<p style="font-size:.85rem;color:#334155">Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
+      +'<p style="font-size:.85rem;color:#334155">Montant à payer : <b>'+MONTANT+' FCFA</b> ('+OFFRE.l+'). Pour payer par '+m.nom+', écrivez-nous sur WhatsApp : nous vous donnons le numéro à utiliser.</p>'
       +'<a href="https://pay.wave.com/m/M_ml_TlymUYKP7syQ/c/ml/" class="btn-wave" target="_blank" rel="noopener noreferrer">Cliquer pour Payer</a>'
-      +'<a href="https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour, je veux payer ma licence TSDim par '+m.nom+'.')+'" target="_blank" rel="noopener" style="'+bw+';background:#25D366">💬 Demander le numéro '+m.nom+'</a>';
+      +'<a href="https://wa.me/'+WA+'?text='+encodeURIComponent('Bonjour, je veux payer ma licence TSDim ('+OFFRE.l+', '+MONTANT+' FCFA) par '+m.nom+'.')+'" target="_blank" rel="noopener" style="'+bw+';background:#25D366">💬 Demander le numéro '+m.nom+'</a>';
     return;
   }
   z.innerHTML='<p style="font-weight:700;color:'+m.coul+';margin:0 0 4px;font-size:1rem">'+m.nom+' - '+MONTANT+' FCFA</p>'
