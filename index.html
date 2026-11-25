@@ -2120,7 +2120,7 @@ function ouvrirAdmin(){
     +'<div class="fm-actions"><button class="btn-action primary" id="admGo" style="background:#f58220">Créer</button></div>'
     +'<div id="admOut" style="display:none;margin-top:10px"><label>Message à envoyer au client</label><textarea id="admMsg" rows="4" readonly style="width:100%;font-size:.8rem"></textarea><button class="btn-action primary" id="admC1" style="width:100%;margin-top:6px">📋 Copier le message</button>'
     +'<label>Ligne à ajouter dans licence.js</label><textarea id="admLine" rows="3" readonly style="width:100%;font-size:.75rem"></textarea><button class="btn-action primary" id="admC2" style="width:100%;margin-top:6px">📋 Copier la ligne</button></div>'
-    +((typeof URL_COMPTES==='string'&&URL_COMPTES)?'<h3 style="margin:18px 0 6px">👥 Utilisateurs (en direct)</h3><button class="btn-action primary" id="admMsgBtn" style="width:100%;margin-bottom:6px;background:#0ea5e9">📢 Envoyer un message aux clients</button><button class="btn-action primary" id="admLive" style="width:100%">🔄 Actualiser</button><div id="admLiveOut" style="overflow-x:auto;margin-top:8px"></div>':'')
+    +((typeof URL_COMPTES==='string'&&URL_COMPTES)?'<h3 style="margin:18px 0 6px">👥 Utilisateurs (en direct)</h3><button class="btn-action primary" id="admPromoBtn" style="width:100%;margin-bottom:6px;background:#9333ea">🎟️ Codes promo</button><button class="btn-action primary" id="admMsgBtn" style="width:100%;margin-bottom:6px;background:#0ea5e9">📢 Envoyer un message aux clients</button><button class="btn-action primary" id="admLive" style="width:100%">🔄 Actualiser</button><div id="admLiveOut" style="overflow-x:auto;margin-top:8px"></div>':'')
     +'<div class="fm-actions"><button class="btn-action warning" id="admClose">Fermer</button></div></div>';
   document.body.appendChild(ov);
   var q=function(i){return ov.querySelector('#'+i)};
@@ -2163,7 +2163,7 @@ function ouvrirAdmin(){
           +'💰 Encaissé ce mois : <b>'+fm(rv.mois)+' FCFA</b> · total : '+fm(rv.total)+' FCFA ('+rv.nb+' paiements)</div>';
         q('admLiveOut').innerHTML=stats+'<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
           +d.liste.map(function(x){var b=String(x.statut).toLowerCase()==='bloque';
-            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(String(x.derniere||'-').replace(/^(\d{4})-(\d\d)-(\d\d)T(\d\d:\d\d).*$/,'$3/$2 $4'))+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="msg" style="padding:5px 7px;border:0;border-radius:6px;background:#0ea5e9;color:#fff">💬 Message</button> <button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
+            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(String(x.derniere||'-').replace(/^(\d{4})-(\d\d)-(\d\d)T(\d\d:\d\d).*$/,'$3/$2 $4'))+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="moins" style="padding:5px 7px;border:0;border-radius:6px;background:#9333ea;color:#fff">➖ Retirer</button> <button data-t="'+x.u+'" data-a="msg" style="padding:5px 7px;border:0;border-radius:6px;background:#0ea5e9;color:#fff">💬 Message</button> <button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
       }).catch(function(){q('admLiveOut').textContent='Connexion impossible'});
     };
     q('admLive').onclick=charger;charger();
@@ -2173,12 +2173,48 @@ function ouvrirAdmin(){
       },'Le client voit le message une seule fois, puis il disparaît.');
     };
     q('admMsgBtn').onclick=function(){ecrireMsg('tous')};
+    var ouvrirPromos=function(){
+      var ov2=document.createElement('div');ov2.className='fm-overlay';ov2.style.cssText+=';align-items:flex-start;overflow-y:auto';
+      ov2.innerHTML='<div class="fm-box" style="max-width:520px;margin:10px auto"><h2>🎟️ Codes promo</h2><button class="btn-action primary" id="prNew" style="width:100%;margin-bottom:8px">➕ Créer un code</button><div id="prListe">Chargement...</div><div class="fm-actions"><button class="btn-action warning" id="prFerme">Fermer</button></div></div>';
+      document.body.appendChild(ov2);
+      ov2.querySelector('#prFerme').onclick=function(){ov2.remove()};
+      var rec=function(){appel({action:'promoListe'}).then(function(d){
+        var z=ov2.querySelector('#prListe');if(!d.ok){z.textContent=d.msg||'Erreur';return}
+        z.innerHTML=d.liste.length?d.liste.map(function(c){return '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:8px;margin-bottom:6px;text-align:left;font-size:.85rem"><b style="font-size:1rem;letter-spacing:1px">'+c.code+'</b> : +'+c.jours+' jour(s)<br>Utilisé '+c.utilises+' / '+c.max+' fois'+(c.expire?' · valable jusqu\'au '+c.expire:' · sans date limite')+'<br><button data-c="'+c.code+'" style="margin-top:6px;padding:5px 9px;border:0;border-radius:6px;background:#dc2626;color:#fff">🗑️ Supprimer</button></div>'}).join(''):'<p style="color:#64748b">Aucun code promo.</p>';
+      }).catch(function(){ov2.querySelector('#prListe').textContent='Connexion impossible'})};
+      rec();
+      ov2.querySelector('#prNew').onclick=function(){
+        formModal('➕ Nouveau code promo',[
+          {label:'Code (ex: BIENVENUE, MALI2026)',value:''},
+          {label:'Jours offerts',type:'number',min:1,value:7},
+          {label:"Nombre d'utilisations possibles (1 = un seul client)",type:'number',min:1,value:1},
+          {label:'Valable pendant combien de jours ? (0 = sans limite)',type:'number',min:0,value:30,opt:true}
+        ],function(v){
+          appel({action:'promoCreer',c:v[0],j:Math.round(v[1]),mx:Math.round(v[2]),v:Math.round(v[3]||0)}).then(function(d){
+            if(!d.ok)return alert('❌ '+(d.msg||'Erreur'));
+            alert('✅ Code créé : '+v[0].toUpperCase()+'\nEnvoyez-le à vos clients.');rec();
+          }).catch(function(){alert('Connexion impossible')});
+        });
+      };
+      ov2.querySelector('#prListe').onclick=function(e){var c=e.target.dataset&&e.target.dataset.c;if(!c)return;
+        formModal('Supprimer le code',[],function(){appel({action:'promoSuppr',c:c}).then(function(d){alert(d.ok?'✅ Code supprimé':'❌ '+(d.msg||'Erreur'));rec()})},'Supprimer le code <b>'+c+'</b> ?')};
+    };
+    q('admPromoBtn').onclick=ouvrirPromos;
     var tm=setInterval(function(){if(!document.body.contains(ov)){clearInterval(tm);return}charger()},15000);
     ov.addEventListener('click',function(e){
       var t=e.target;if(!t.dataset||!t.dataset.a)return;
       var u=t.dataset.t,a=t.dataset.a;
       var envoyer=function(par,okMsg){appel(par).then(function(d){alert(d.ok?(okMsg||'✅ Fait'):'❌ '+(d.msg||'Erreur'));charger()}).catch(function(){alert('Connexion impossible')})};
       if(a==='msg')return ecrireMsg(u);
+      if(a==='moins'){
+        return formModal('➖ Retirer du temps à '+u,[
+          {label:'Nombre de jours à retirer',type:'number',min:1,value:7}
+        ],function(v){
+          var j=Math.round(v[0]);
+          if(!(j>=1&&j<=3650))return alert('⚠️ Nombre de jours invalide (1 à 3650).');
+          formModal('Confirmer',[],function(){envoyer({action:'prolonger',t:u,j:-j},'✅ '+j+' jour(s) retiré(s) à '+u)},'Retirer <b>'+j+' jour(s)</b> à <b>'+u+'</b> ?');
+        });
+      }
       if(a==='plus')return envoyer({action:'prolonger',t:u,j:parseInt(t.dataset.j,10)},'✅ +'+t.dataset.j+' jours ajoutés à '+u);
       if(a==='plusX'){
         return formModal('⏱️ Ajouter du temps à '+u,[
@@ -2392,6 +2428,20 @@ window.ouvrirClients=function(){
   dessiner();
 };
 bouton('👥 Clients',window.ouvrirClients);
+window.ouvrirPromoClient=function(){
+  var s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
+  if(!s||!s.u||!(s.tk||s.p))return alert("⚠️ Connectez-vous d'abord avec votre compte pour utiliser un code promo.");
+  formModal('🎟️ Code promo',[{label:'Entrez votre code',value:''}],function(v){
+    var par={action:'promo',c:v[0],u:s.u,a:idAppareil(),s:1};if(s.tk)par.tk=s.tk;else par.p=s.p;
+    fetch(URL_COMPTES+'?'+Object.keys(par).map(function(k){return k+'='+encodeURIComponent(par[k])}).join('&')).then(function(r){return r.json()}).then(function(d){
+      if(!d.ok)return alert('❌ '+(d.msg||'Code refusé'));
+      try{store.setItem('tsdim_exp',d.expiration)}catch(e){}
+      if(/^\d{4}-\d\d-\d\d$/.test(d.expiration))DATE_LIMITE=new Date(d.expiration+'T23:59:59');
+      alert('🎉 Code accepté : +'+d.jours+' jour(s) ajouté(s) à votre licence.');
+    }).catch(function(){alert('❌ Connexion impossible. Vérifiez votre internet.')});
+  },'Le code vous ajoute des jours à votre licence.');
+};
+if(modeCompte())bouton('🎟️ Code promo',window.ouvrirPromoClient);
 clSuggest();
 bouton("📖 Mode d'emploi",function(){window.ouvrirTexteLegal('aide')});
 /* Couleurs personnalisées : en-tête et arrière-plan */
