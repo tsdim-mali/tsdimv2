@@ -1697,13 +1697,37 @@ function genererFacture(valPan,valBat,prix){
   for(var i=1;i<=n;i++){doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
     doc.text('Document établi avec TSDim  |  Page '+i+'/'+n,105,290,{align:'center'})}
   var nom='Facture_TSDim_'+client.replace(/[^\w\-]+/g,'_')+'_'+numero+'.pdf',buf=doc.output('arraybuffer');
-  if(String(prix[15]).indexOf('partager')>=0)setTimeout(function(){window.partagerFacture(buf,nom,numero,client,ttc)},700);
+  if(String(prix[15]).indexOf('partager')>=0&&!/iPad|iPhone|iPod/.test(navigator.userAgent))setTimeout(function(){window.partagerFacture(buf,nom,numero,client,ttc)},700);
   var cl=(window.claude&&window.claude.use)?window.claude.use('downloads'):Promise.resolve(null);
   cl.catch(function(){return null}).then(function(dl){
-    if(!dl){doc.save(nom);return}
+    if(!dl){window.sauverPDF(doc,buf,nom);return}
     return dl.save({filename:nom,data:buf}).then(function(){alert('✅ Facture téléchargée')}).catch(function(e){if(!e||e.code!=='declined')alert('⚠️ Téléchargement impossible : '+((e&&(e.message||e.code))||'erreur'))});
   });
 }
+
+/* iPhone/iPad : le téléchargement automatique est bloqué par Safari (pas de geste de l'utilisateur).
+   On affiche donc un bouton : le clic est un vrai geste, et le PDF s'ouvre / s'enregistre via la feuille de partage. */
+window.sauverPDF=function(doc,buf,nom){
+  var ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(!ios){try{doc.save(nom)}catch(e){alert('⚠️ Téléchargement impossible : '+(e.message||e))}return}
+  var blob=new Blob([buf],{type:'application/pdf'}),url=URL.createObjectURL(blob);
+  var ov=document.createElement('div');ov.className='fm-overlay';
+  ov.innerHTML='<div class="fm-box" style="max-width:420px;text-align:center"><h2>🧾 Facture prête</h2>'
+   +'<p style="font-size:.9rem">Touchez le bouton ci-dessous, puis choisissez <b>« Enregistrer dans Fichiers »</b> ou <b>WhatsApp</b>.</p>'
+   +'<button class="btn-action primary" id="pdfPartage" style="width:100%;margin-top:8px">📥 Enregistrer / Partager le PDF</button>'
+   +'<button class="btn-action primary" id="pdfOuvrir" style="width:100%;margin-top:8px;background:#64748b">👁️ Ouvrir le PDF</button>'
+   +'<div class="fm-actions"><button class="btn-action warning" id="pdfFerme">Fermer</button></div></div>';
+  document.body.appendChild(ov);
+  var fermer=function(){ov.remove();setTimeout(function(){URL.revokeObjectURL(url)},60000)};
+  ov.querySelector('#pdfFerme').onclick=fermer;
+  ov.querySelector('#pdfOuvrir').onclick=function(){window.open(url,'_blank')||(location.href=url)};
+  ov.querySelector('#pdfPartage').onclick=function(){
+    try{var f=new File([blob],nom,{type:'application/pdf'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:nom}).catch(function(e){if(e&&e.name!=='AbortError')window.open(url,'_blank')});return}
+    }catch(e){}
+    window.open(url,'_blank')||(location.href=url);
+  };
+};
 
 setInterval(function(){try{checkLicence()}catch(e){}},1000);
 
