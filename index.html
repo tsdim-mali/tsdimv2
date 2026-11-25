@@ -2193,7 +2193,7 @@ function ouvrirAdmin(){
           appel({action:'promoCreer',c:v[0],j:Math.round(v[1]),mx:Math.round(v[2]),v:Math.round(v[3]||0)}).then(function(d){
             if(!d.ok)return alert('❌ '+(d.msg||'Erreur'));
             alert('✅ Code créé : '+v[0].toUpperCase()+'\nEnvoyez-le à vos clients.');rec();
-          }).catch(function(){alert('Connexion impossible')});
+          }).catch(function(e){alert('Connexion impossible ('+((e&&e.message)||e||'réponse invalide')+'). Vérifiez que la dernière version de Code.gs est déployée.')});
         });
       };
       ov2.querySelector('#prListe').onclick=function(e){var c=e.target.dataset&&e.target.dataset.c;if(!c)return;
