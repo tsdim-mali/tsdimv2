@@ -2071,7 +2071,7 @@ function ouvrirAdmin(){
 /* ===== Espace SUPER ADMIN (dans le site) ===== */
 var ROLE='client';
 function majAdmin(){var b=document.getElementById('btnAdmin');if(b)b.style.display=(ROLE==='admin')?'':'none';var q=document.getElementById('btnQuit');if(q)q.style.display=modeCompte()?'':'none'}
-function deconnexion(){try{store.removeItem('tsdim_compte');store.removeItem('tsdim_exp')}catch(e){}ROLE='client';location.reload()}
+function deconnexion(){try{store.removeItem('tsdim_compte');store.removeItem('tsdim_exp');store.setItem('tsdim_deco','1')}catch(e){}ROLE='client';location.reload()}
 function notesAdmin(){try{return JSON.parse(store.getItem('tsdim_admin_notes'))||{}}catch(e){return {}}}
 function dureeTxt(c){return c.j?(c.j>=365?Math.round(c.j/365)+' an':c.j+' j'):(c.e||'-')}
 function copierTexte(t){try{navigator.clipboard.writeText(t).then(function(){alert('✅ Copié')},function(){alert('Copie impossible')})}catch(e){alert('Copie impossible')}}
@@ -2622,19 +2622,19 @@ window.payerEnLigne=function(){
 window.verifierPaiement=function(){
   if(!payOn())return;
   srv({action:'licence',device:idAppareil()}).then(function(d){
-    if(d&&d.ok){ecrireSigne('tsdim_paye',d.exp);document.querySelectorAll('.fm-overlay').forEach(function(o){o.remove()});alert('✅ Paiement trouvé : accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
+    if(d&&d.ok){try{store.removeItem('tsdim_deco')}catch(e){}ecrireSigne('tsdim_paye',d.exp);document.querySelectorAll('.fm-overlay').forEach(function(o){o.remove()});alert('✅ Paiement trouvé : accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
     else alert("Aucun paiement trouvé pour cet appareil. Si vous venez de payer, attendez 1 minute et réessayez.");
   }).catch(function(){alert('❌ Connexion impossible.')});
 };
 var ca0=connexionAuto;
-connexionAuto=function(cb){var Lp=window.limitePaiement();if(Lp){DATE_LIMITE=Lp;ROLE='client';majAdmin();return cb(true)}return ca0(cb)};
+connexionAuto=function(cb){var deco=null;try{deco=store.getItem('tsdim_deco')}catch(e){}if(deco==='1'){return afficherConnexion(function(r){try{store.removeItem('tsdim_deco')}catch(e){}cb(r)})}var Lp=window.limitePaiement();if(Lp){DATE_LIMITE=Lp;ROLE='client';majAdmin();return cb(true)}return ca0(cb)};
 /* retour de la page de paiement : ?token=... */
 var tkRetour=null;try{tkRetour=new URLSearchParams(location.search).get('token')}catch(e){}
 if(tkRetour&&payOn()){
   setTimeout(function(){
     srv({action:'statut',token:tkRetour,device:idAppareil()}).then(function(d){
       try{history.replaceState(null,'',location.pathname)}catch(e){}
-      if(d&&d.ok){ecrireSigne('tsdim_paye',d.exp);alert('✅ Paiement confirmé ! Accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
+      if(d&&d.ok){try{store.removeItem('tsdim_deco')}catch(e){}ecrireSigne('tsdim_paye',d.exp);alert('✅ Paiement confirmé ! Accès valable '+nbJours(d.exp)+' jour(s).');entrerSite()}
       else alert("⏳ Paiement pas encore confirmé ("+((d&&d.status)||'en attente')+"). Appuyez sur « J'ai déjà payé » dans une minute.");
     }).catch(function(){alert("❌ Connexion impossible. Appuyez plus tard sur « J'ai déjà payé ».")});
   },600);
