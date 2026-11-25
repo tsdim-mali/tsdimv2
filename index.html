@@ -1729,6 +1729,25 @@ window.sauverPDF=function(doc,buf,nom){
   };
 };
 
+/* ---------- Messages de l'administrateur : affichés au client, une seule fois ---------- */
+window.afficherAnnonces=function(liste){
+  if(!liste||!liste.length||document.getElementById('annonceBox'))return;
+  var lus=[];try{lus=JSON.parse(store.getItem('tsdim_lus')||'[]')}catch(e){}
+  var nv=liste.filter(function(a){return lus.indexOf(a.id)<0});
+  if(!nv.length)return;
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var ov=document.createElement('div');ov.className='fm-overlay';ov.id='annonceBox';
+  ov.innerHTML='<div class="fm-box" style="max-width:420px"><h2>📢 Message</h2>'
+    +nv.map(function(a){return '<p style="white-space:pre-wrap;background:#f1f5f9;padding:10px;border-radius:8px;margin:8px 0;text-align:left">'+esc(a.texte)+'</p>'}).join('')
+    +'<div class="fm-actions"><button class="btn-action primary" id="annOk" style="width:100%">OK</button></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#annOk').onclick=function(){
+    nv.forEach(function(a){lus.push(a.id)});
+    try{store.setItem('tsdim_lus',JSON.stringify(lus.slice(-50)))}catch(e){}
+    ov.remove();
+  };
+};
+
 setInterval(function(){try{checkLicence()}catch(e){}},1000);
 
 function ouvrirSite(){
@@ -1769,7 +1788,7 @@ function verifierConnexion(u,p,silencieux,tk){
     return fetch(URL_COMPTES+(URL_COMPTES.indexOf('?')<0?'?':'&')+'u='+encodeURIComponent(u)+(tk?'&tk='+encodeURIComponent(tk):'&p='+encodeURIComponent(p))+'&a='+encodeURIComponent(idAppareil())+(silencieux?'&s=1':''))
       .then(function(r){return r.json()})
       .then(function(d){
-        if(d.ok){store.setItem('tsdim_exp',d.expiration);var rr=fin(d.expiration);rr.role=d.role||'client';rr.jeton=d.jeton||'';return rr}
+        if(d.ok){store.setItem('tsdim_exp',d.expiration);var rr=fin(d.expiration);rr.role=d.role||'client';rr.jeton=d.jeton||'';try{window.afficherAnnonces&&window.afficherAnnonces(d.annonces)}catch(e){}return rr}
         return {ok:false,msg:d.msg||'Accès refusé.',relogin:!!d.relogin};
       })
       .catch(function(){
@@ -2076,7 +2095,7 @@ function ouvrirAdmin(){
     +'<div class="fm-actions"><button class="btn-action primary" id="admGo" style="background:#f58220">Créer</button></div>'
     +'<div id="admOut" style="display:none;margin-top:10px"><label>Message à envoyer au client</label><textarea id="admMsg" rows="4" readonly style="width:100%;font-size:.8rem"></textarea><button class="btn-action primary" id="admC1" style="width:100%;margin-top:6px">📋 Copier le message</button>'
     +'<label>Ligne à ajouter dans licence.js</label><textarea id="admLine" rows="3" readonly style="width:100%;font-size:.75rem"></textarea><button class="btn-action primary" id="admC2" style="width:100%;margin-top:6px">📋 Copier la ligne</button></div>'
-    +((typeof URL_COMPTES==='string'&&URL_COMPTES)?'<h3 style="margin:18px 0 6px">👥 Utilisateurs (en direct)</h3><button class="btn-action primary" id="admLive" style="width:100%">🔄 Actualiser</button><div id="admLiveOut" style="overflow-x:auto;margin-top:8px"></div>':'')
+    +((typeof URL_COMPTES==='string'&&URL_COMPTES)?'<h3 style="margin:18px 0 6px">👥 Utilisateurs (en direct)</h3><button class="btn-action primary" id="admMsgBtn" style="width:100%;margin-bottom:6px;background:#0ea5e9">📢 Envoyer un message aux clients</button><button class="btn-action primary" id="admLive" style="width:100%">🔄 Actualiser</button><div id="admLiveOut" style="overflow-x:auto;margin-top:8px"></div>':'')
     +'<div class="fm-actions"><button class="btn-action warning" id="admClose">Fermer</button></div></div>';
   document.body.appendChild(ov);
   var q=function(i){return ov.querySelector('#'+i)};
@@ -2111,15 +2130,22 @@ function ouvrirAdmin(){
         var on=d.liste.filter(function(x){return x.act&&Date.now()-x.act<90000}).length;
         q('admLiveOut').innerHTML='<p style="margin:0 0 6px"><b>🟢 '+on+' en ligne</b> sur '+d.liste.length+' comptes (mise à jour toutes les 15 s)</p><table style="width:100%;font-size:.76rem;border-collapse:collapse"><tr><th>Compte</th><th>Client</th><th>Expire</th><th>Dern. (nb)</th><th>🟢</th><th>📱</th><th>Actions</th></tr>'
           +d.liste.map(function(x){var b=String(x.statut).toLowerCase()==='bloque';
-            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
+            return '<tr><td><b>'+x.u+'</b>'+(x.role==='admin'?' 🛡️':'')+'</td><td><input data-t="'+x.u+'" value="'+String(x.client||'').replace(/"/g,'&quot;')+'" placeholder="Client" style="width:92px;padding:5px"></td><td>'+(x.exp||(x.duree?x.duree+' j':'—'))+'</td><td>'+(x.derniere||'-')+' ('+(x.nb||0)+')</td><td>'+((x.act&&Date.now()-x.act<90000)?'🟢':'⚪')+'</td><td>'+(x.appareil?'✔':'—')+'</td><td style="white-space:nowrap"><button data-t="'+x.u+'" data-a="'+(b?'debloque':'bloque')+'" style="padding:5px 7px;border:0;border-radius:6px;background:'+(b?'#16a34a':'#dc2626')+';color:#fff">'+(b?'✅':'⛔')+'</button> <button data-t="'+x.u+'" data-a="plus" data-j="7" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+7j</button> <button data-t="'+x.u+'" data-a="plus" data-j="30" style="padding:5px 7px;border:0;border-radius:6px;background:#0a4d94;color:#fff">+30j</button> <button data-t="'+x.u+'" data-a="plusX" style="padding:5px 7px;border:0;border-radius:6px;background:#0369a1;color:#fff">⏱️ +Temps</button> '+(x.appareil&&x.role!=='admin'?'<button data-t="'+x.u+'" data-a="liberer" style="padding:5px 7px;border:0;border-radius:6px;background:#7c3aed;color:#fff">📱 Libérer</button> ':'')+'<button data-t="'+x.u+'" data-a="msg" style="padding:5px 7px;border:0;border-radius:6px;background:#0ea5e9;color:#fff">💬 Message</button> <button data-t="'+x.u+'" data-a="mdp" style="padding:5px 7px;border:0;border-radius:6px;background:#b45309;color:#fff">🔑 Mot de passe</button> <button data-t="'+x.u+'" data-a="supprimer" style="padding:5px 7px;border:0;border-radius:6px;background:#475569;color:#fff">🗑️ Supprimer</button></td></tr>'}).join('')+'</table>';
       }).catch(function(){q('admLiveOut').textContent='Connexion impossible'});
     };
     q('admLive').onclick=charger;charger();
+    var ecrireMsg=function(dest){
+      formModal('📢 Envoyer un message',[{label:'Destinataire (tous, ou un identifiant)',value:dest||'tous'},{label:'Message (600 caractères max)',value:''}],function(v){
+        appel({action:'annoncer',d:v[0],m:v[1]}).then(function(d){alert(d.ok?'✅ Message envoyé. Les clients le verront à leur prochaine ouverture (ou dans 30 secondes s\'ils sont connectés).':'❌ '+(d.msg||'Erreur'))}).catch(function(){alert('Connexion impossible')});
+      },'Le client voit le message une seule fois, puis il disparaît.');
+    };
+    q('admMsgBtn').onclick=function(){ecrireMsg('tous')};
     var tm=setInterval(function(){if(!document.body.contains(ov)){clearInterval(tm);return}charger()},15000);
     ov.addEventListener('click',function(e){
       var t=e.target;if(!t.dataset||!t.dataset.a)return;
       var u=t.dataset.t,a=t.dataset.a;
       var envoyer=function(par,okMsg){appel(par).then(function(d){alert(d.ok?(okMsg||'✅ Fait'):'❌ '+(d.msg||'Erreur'));charger()}).catch(function(){alert('Connexion impossible')})};
+      if(a==='msg')return ecrireMsg(u);
       if(a==='plus')return envoyer({action:'prolonger',t:u,j:parseInt(t.dataset.j,10)},'✅ +'+t.dataset.j+' jours ajoutés à '+u);
       if(a==='plusX'){
         return formModal('⏱️ Ajouter du temps à '+u,[
