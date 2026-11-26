@@ -10,12 +10,21 @@
   <link rel="canonical" href="https://tsdim-mali.github.io/tsdimv2/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="TSDim">
-  <meta property="og:title" content="TSDim – Dimensionnement Solaire">
-  <meta property="og:description" content="TSDim : calculez gratuitement votre installation solaire au Mali : panneaux, batteries, onduleur et régulateur selon vos appareils. Devis et factures en FCFA.">
-  <meta property="og:url" content="https://tsdim-mali.github.io/tsdimv2/">
-  <meta property="og:image" content="https://tsdim-mali.github.io/tsdimv2/icon-512.png">
   <meta property="og:locale" content="fr_FR">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:url" content="https://tsdim-mali.github.io/tsdimv2/">
+  <meta property="og:title" content="TSDim – Calculez votre installation solaire au Mali">
+  <meta property="og:description" content="Panneaux, batteries, onduleur et régulateur selon vos appareils. Devis et factures en FCFA, depuis votre téléphone. Essai gratuit 5 jours.">
+  <meta property="og:image" content="https://tsdim-mali.github.io/tsdimv2/apercu.jpg">
+  <meta property="og:image:secure_url" content="https://tsdim-mali.github.io/tsdimv2/apercu.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="TSDim : dimensionnement d'installation solaire au Mali">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TSDim – Calculez votre installation solaire au Mali">
+  <meta name="twitter:description" content="Panneaux, batteries, onduleur et régulateur selon vos appareils. Devis et factures en FCFA.">
+  <meta name="twitter:image" content="https://tsdim-mali.github.io/tsdimv2/apercu.jpg">
+  <meta name="twitter:image:alt" content="TSDim : dimensionnement d'installation solaire au Mali">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"TSDim","alternateName":["TSDim Mali","TSDim Dimensionnement Solaire"],"url":"https://tsdim-mali.github.io/tsdimv2/","inLanguage":"fr"}</script>
   <style>
 :root {
@@ -2442,6 +2451,31 @@ window.ouvrirPromoClient=function(){
   },'Le code vous ajoute des jours à votre licence.');
 };
 if(modeCompte())bouton('🎟️ Code promo',window.ouvrirPromoClient);
+window.ouvrirAssistant=function(){
+  var s=null;try{s=JSON.parse(store.getItem('tsdim_compte'))}catch(e){}
+  if(!s||!s.u||!(s.tk||s.p))return alert("⚠️ Connectez-vous d'abord avec votre compte pour utiliser l'assistant.");
+  var ov=document.createElement('div');ov.className='fm-overlay';
+  ov.innerHTML='<div class="fm-box" style="max-width:460px;display:flex;flex-direction:column;max-height:88vh"><h2>🤖 Assistant TSDim</h2>'
+   +'<div id="iaFil" style="flex:1;overflow-y:auto;min-height:120px;max-height:50vh;text-align:left;font-size:.92rem"></div>'
+   +'<div id="iaInfo" style="font-size:.78rem;color:#64748b;margin:6px 0">5 questions par jour. L\'assistant peut se tromper : vérifiez les calculs importants.</div>'
+   +'<textarea id="iaQ" maxlength="500" rows="2" placeholder="Posez votre question..." style="width:100%;box-sizing:border-box"></textarea>'
+   +'<div class="fm-actions"><button class="btn-action warning" id="iaFerme">Fermer</button><button class="btn-action primary" id="iaEnvoi">Envoyer</button></div></div>';
+  document.body.appendChild(ov);
+  var fil=ov.querySelector('#iaFil'),info=ov.querySelector('#iaInfo'),q=ov.querySelector('#iaQ'),bt=ov.querySelector('#iaEnvoi');
+  function bulle(txt,moi){var d=document.createElement('div');d.textContent=txt;d.style.cssText='white-space:pre-wrap;padding:8px 10px;border-radius:10px;margin:6px 0;'+(moi?'background:#e0f2fe;margin-left:30px':'background:#f1f5f9;margin-right:30px');fil.appendChild(d);fil.scrollTop=fil.scrollHeight;return d}
+  bulle("Bonjour ! Posez-moi vos questions sur TSDim ou sur le solaire.",false);
+  ov.querySelector('#iaFerme').onclick=function(){ov.remove()};
+  bt.onclick=function(){
+    var t=q.value.trim();if(!t||bt.disabled)return;
+    bulle(t,true);q.value='';bt.disabled=true;var att=bulle('…',false);
+    var par={action:'assistant',q:t,u:s.u,a:idAppareil(),s:1};if(s.tk)par.tk=s.tk;else par.p=s.p;
+    fetch(URL_COMPTES+'?'+Object.keys(par).map(function(k){return k+'='+encodeURIComponent(par[k])}).join('&')).then(function(r){return r.json()}).then(function(d){
+      att.textContent=d.ok?d.texte:('⚠️ '+(d.msg||'Erreur'));
+      if(typeof d.restant==='number')info.textContent='Il vous reste '+d.restant+' question(s) aujourd\'hui. L\'assistant peut se tromper : vérifiez les calculs importants.';
+    }).catch(function(){att.textContent='⚠️ Connexion impossible. Vérifiez votre internet.'}).then(function(){bt.disabled=false});
+  };
+};
+if(modeCompte())bouton('🤖 Assistant',window.ouvrirAssistant);
 clSuggest();
 bouton("📖 Mode d'emploi",function(){window.ouvrirTexteLegal('aide')});
 /* Couleurs personnalisées : en-tête et arrière-plan */
